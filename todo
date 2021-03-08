@@ -1,0 +1,10 @@
+gmodel 				OK
+makefiles 			OK
+init_model 			OK
+init_recent_files	OK
+set_episode			OK
+datageneration_ql	DEP/OK
+RobotNQL
+TrainNQL
+train_ql
+TransitionTable
