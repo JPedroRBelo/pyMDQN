@@ -36,8 +36,7 @@ class Environment:
 					f.write(str(1))	
 				time.sleep(1)
 		with open('flag_simulator.txt', 'w') as f:
-				f.write(str(0))
-		
+				f.write(str(0))		
 
 	def get_tensor_from_image(self,file):
 		convert = T.Compose([T.ToPILImage(),
@@ -47,18 +46,10 @@ class Environment:
 		screen = np.ascontiguousarray(screen, dtype=np.float32) / 255
 		screen = torch.from_numpy(screen)
 		screen = convert(screen).to(self.device)
-		print(screen.size())
 		return screen
-
-
-
-
-
-
 
 	def pre_process(self,step):	
 		print('Preprocessing images')
-
 		proc_image=torch.cuda.FloatTensor(self.state_size,self.proc_frame_size,self.proc_frame_size)
 		proc_depth=torch.cuda.FloatTensor(self.state_size,self.proc_frame_size,self.proc_frame_size)
 		episode=torch.load('files/episode.dat')
@@ -74,7 +65,6 @@ class Environment:
 
 		return proc_image,proc_depth
 
-
 	
 	def send_data_to_pepper(self,data):
 		print('Send data connected to Pepper')
@@ -82,7 +72,6 @@ class Environment:
 		print('Sending data to Pepper')
 		while True:
 			data = self.socket.recv(1024).decode()
-			print (data)
 			if data:
 				return float(data.replace(',','.'))
 			break
@@ -94,14 +83,7 @@ class Environment:
 		s,d=self.pre_process(step)
 		term = False
 		return s,d,r,term
-
-
-
 	
 	def close_connection(self):
 		self.socket.close()
 
-
-env = Environment()
-print(env.perform_action('4',1))
-env.close_connection()

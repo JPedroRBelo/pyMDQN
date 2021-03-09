@@ -3,8 +3,9 @@ makefiles 			OK
 init_model 			OK
 init_recent_files	OK
 set_episode			OK
-datageneration_ql	DEP/OK
-RobotNQL
+datageneration_ql	OK
+robot_environment	OK
+RobotNQL			OK
 TrainNQL
 train_ql
 TransitionTable

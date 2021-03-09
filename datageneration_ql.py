@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 from pathlib import Path
+from RobotNQL import RobotNQL
+from robot_environment import Environment
 
 '''
 require 'nn'
@@ -18,22 +20,26 @@ torch.manual_seed(torch.initial_seed())
 win=None
 
 episode=torch.load('files/episode.dat')
-#local agent=RobotNQL(episode=episode)
-#env=Environment()
-
 dirname_rgb='dataset/RGB/ep'+episode
 dirname_dep='dataset/Depth/ep'+episode
 dirname_model='results/ep'+episode
+episode = int(episode)
+
+
+agent = RobotNQL(epi=episode)
+env = Environment()
+
+
 Path(dirname_rgb).mkdir(parents=True, exist_ok=True)
 Path(dirname_dep).mkdir(parents=True, exist_ok=True)
 Path(dirname_model).mkdir(parents=True, exist_ok=True)
 
-episode = int(episode)
+
 
 
 
 def generate_data(episode):
-	
+	env = Environment()
 	recent_rewards=torch.load('recent_rewards.dat')
 	recent_actions=torch.load('recent_actions.dat')
 	reward_history=torch.load('files/reward_history.dat')
@@ -69,15 +75,15 @@ def generate_data(episode):
 	total_reward = aux_total_rewards
 	print(init_step)
 
-	#env.send_data_to_pepper("step"+init_step)
-	#env.close_connection()
-	#env = Environment()
+	env.send_data_to_pepper("step"+str(init_step))
+	env.close_connection()
+	env = Environment()
 
 	reward = 0 #temp
 	terminal = 0
 	screen = None
 	depth = None
-	#screen, depth, reward, terminal = env.perform_action('-',init_step+1)
+	screen, depth, reward, terminal = env.perform_action('-',init_step+1)
 
 	step=init_step+1
 	while step <=t_steps:
@@ -86,19 +92,19 @@ def generate_data(episode):
 		numSteps=(episode-1)*t_steps+step
 		if reward>15:
 			pass
-			#action_index = agent.perceive(1, screen,depth, terminal, false, numSteps,step,testing)
+			action_index = agent.perceive(1, screen,depth, terminal, False, numSteps,step,testing)
 		else:
 			pass
-			#action_index = agent.perceive(0, screen,depth, terminal, false, numSteps,step,testing)
+			action_index = agent.perceive(0, screen,depth, terminal, False, numSteps,step,testing)
 		step=step+1		
 		if action_index == None:
 				action_index=1
 		if not terminal: 
 			pass
-			#screen,depth,reward,terminal=env.perform_action(aset[action_index],step)
+			screen,depth,reward,terminal=env.perform_action(aset[action_index],step)
 		else:  
 			pass
-			#screen,depth, reward, terminal = env.perform_action('-',step)
+			screen,depth, reward, terminal = env.perform_action('-',step)
 
 		if step >= t_steps:
 			terminal=1
@@ -129,6 +135,6 @@ def generate_data(episode):
 
 def main():
 	generate_data(episode)
-	#env:close_connection()
+	env.close_connection()
 
 main()
