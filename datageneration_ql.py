@@ -47,7 +47,7 @@ def generate_data(episode):
 	ep_rewards=torch.load('files/ep_rewards.dat')
 
 	aset = ['1','2','3','4']
-	testing = 0.1
+	testing = False
 	init_step = 0
 	
 	if(len(reward_history)!=episode):
