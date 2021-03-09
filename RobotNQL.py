@@ -6,7 +6,7 @@ import numpy as np
 class RobotNQL:
 	def __init__(self,epi):
 		#cpu or cuda
-		self.device = "cuda" #torch.device("cuda" if torch.cuda.is_available() else "cpu")
+		self.device = "cpu" #torch.device("cuda" if torch.cuda.is_available() else "cpu")
 		self.state_dim  = 84 #State dimensionality 84x84.
 		self.actions	= {'1','2','3','4'}
 		self.n_actions  = len(self.actions)
@@ -24,7 +24,7 @@ class RobotNQL:
 		self.iter=1
 		self.seq=""	
 
-		if(self.device=="gpu"):
+		if(self.device=="cuda"):
 			modelA='results/ep'+str(self.episode)+'/modelA_cuda.net'
 			modelB='results/ep'+str(self.episode)+'/modelB_cuda.net'
 		else:
@@ -46,8 +46,8 @@ class RobotNQL:
 
 
 	def perceive(self,reward, state, depth, terminal, testing, numSteps, steps, testing_ep):
-		curState = state
-		curDepth = depth  
+		curState = state.to(self.device)
+		curDepth = depth.to(self.device)
 		actionIndex = 0
 		if not terminal:
 			actionIndex = self.eGreedy(curState,curDepth, numSteps, steps, testing_ep)
