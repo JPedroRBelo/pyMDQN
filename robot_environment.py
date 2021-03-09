@@ -53,8 +53,8 @@ class Environment:
 		proc_image=torch.cuda.FloatTensor(self.state_size,self.proc_frame_size,self.proc_frame_size)
 		proc_depth=torch.cuda.FloatTensor(self.state_size,self.proc_frame_size,self.proc_frame_size)
 		episode=torch.load('files/episode.dat')
-		dirname_rgb='dataset/RGB/ep'+episode
-		dirname_dep='dataset/Depth/ep'+episode
+		dirname_rgb='dataset/RGB/ep'+str(episode)
+		dirname_dep='dataset/Depth/ep'+str(episode)
 		for i in range(1,self.state_size+1):
 
 			grayfile=dirname_rgb+'/image_'+str(step)+'_'+str(i)+'.png'
@@ -63,7 +63,7 @@ class Environment:
 			proc_image[i-1] = self.get_tensor_from_image(grayfile)
 			proc_depth[i-1] = self.get_tensor_from_image(depthfile)			
 
-		return proc_image,proc_depth
+		return proc_image.unsqueeze(0).to(self.device),proc_depth.unsqueeze(0).to(self.device)
 
 	
 	def send_data_to_pepper(self,data):

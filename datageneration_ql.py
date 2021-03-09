@@ -20,9 +20,9 @@ torch.manual_seed(torch.initial_seed())
 win=None
 
 episode=torch.load('files/episode.dat')
-dirname_rgb='dataset/RGB/ep'+episode
-dirname_dep='dataset/Depth/ep'+episode
-dirname_model='results/ep'+episode
+dirname_rgb='dataset/RGB/ep'+str(episode)
+dirname_dep='dataset/Depth/ep'+str(episode)
+dirname_model='results/ep'+str(episode)
 episode = int(episode)
 
 
@@ -47,19 +47,19 @@ def generate_data(episode):
 	ep_rewards=torch.load('files/ep_rewards.dat')
 
 	aset = ['1','2','3','4']
-	testing = False
+	testing = 0.1
 	init_step = 0
 	
 	if(len(reward_history)!=episode):
 		if((len(recent_rewards)>0) and (len(recent_rewards)<=t_steps)):
 			init_step = len(recent_rewards)
 		
-
+	'''
 	if testing:
 		#aset = {'1','1','1','1'}
 		aset = ['4','4','4','4']
 		init_step = 0
-
+	'''
 
 	aux_total_rewards = 0
 	for i in range(init_step):
@@ -91,19 +91,15 @@ def generate_data(episode):
 		action_index=0
 		numSteps=(episode-1)*t_steps+step
 		if reward>15:
-			pass
 			action_index = agent.perceive(1, screen,depth, terminal, False, numSteps,step,testing)
 		else:
-			pass
 			action_index = agent.perceive(0, screen,depth, terminal, False, numSteps,step,testing)
 		step=step+1		
 		if action_index == None:
 				action_index=1
 		if not terminal: 
-			pass
 			screen,depth,reward,terminal=env.perform_action(aset[action_index],step)
-		else:  
-			pass
+		else:
 			screen,depth, reward, terminal = env.perform_action('-',step)
 
 		if step >= t_steps:

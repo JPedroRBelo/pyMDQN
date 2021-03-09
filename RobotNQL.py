@@ -5,7 +5,7 @@ import numpy as np
 
 class RobotNQL:
 	def __init__(self,epi):
-		#self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+		self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 		self.state_dim  = 84 #State dimensionality 84x84.
 		self.actions	= {'1','2','3','4'}
 		self.n_actions  = len(self.actions)
@@ -29,8 +29,8 @@ class RobotNQL:
 		print(modelA)
 		print(modelB)
 
-		self.networkA=torch.load(modelA)
-		self.networkB=torch.load(modelB)
+		self.networkA=torch.load(modelA).to(self.device)
+		self.networkB=torch.load(modelB).to(self.device)
 
 		self.numSteps = 0 #Number of perceived states.
 		self.lastState = None
@@ -59,9 +59,9 @@ class RobotNQL:
 		if torch.rand(1) < self.ep:
 			return np.random.randint(0, self.n_actions)
 		else:
-			return self.greedy(state)
+			return self.greedy(state,depth)
 		
-	def greedy(self,state):
+	def greedy(self,state,depth):
 		print("greedy")
 		self.networkA.eval()
 		self.networkB.eval()
