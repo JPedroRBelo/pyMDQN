@@ -14,7 +14,7 @@ require 'os'
 '''
 
 t_steps=2050
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+#device = "cpu"#torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 torch.manual_seed(torch.initial_seed())  
 win=None

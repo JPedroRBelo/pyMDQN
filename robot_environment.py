@@ -12,7 +12,7 @@ from PIL import Image
 class Environment:
 	def __init__(self):
 		# if gpu is to be used
-		self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+		#self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 		#self.r_len=8
 		self.raw_frame_height= 320
 		self.raw_frame_width=  240
@@ -45,13 +45,13 @@ class Environment:
 		screen = Image.open(file)
 		screen = np.ascontiguousarray(screen, dtype=np.float32) / 255
 		screen = torch.from_numpy(screen)
-		screen = convert(screen).to(self.device)
+		screen = convert(screen)#.to(self.device)
 		return screen
 
 	def pre_process(self,step):	
 		print('Preprocessing images')
-		proc_image=torch.cuda.FloatTensor(self.state_size,self.proc_frame_size,self.proc_frame_size)
-		proc_depth=torch.cuda.FloatTensor(self.state_size,self.proc_frame_size,self.proc_frame_size)
+		proc_image=torch.FloatTensor(self.state_size,self.proc_frame_size,self.proc_frame_size)
+		proc_depth=torch.FloatTensor(self.state_size,self.proc_frame_size,self.proc_frame_size)
 		episode=torch.load('files/episode.dat')
 		dirname_rgb='dataset/RGB/ep'+str(episode)
 		dirname_dep='dataset/Depth/ep'+str(episode)
@@ -63,7 +63,7 @@ class Environment:
 			proc_image[i-1] = self.get_tensor_from_image(grayfile)
 			proc_depth[i-1] = self.get_tensor_from_image(depthfile)			
 
-		return proc_image.unsqueeze(0).to(self.device),proc_depth.unsqueeze(0).to(self.device)
+		return proc_image.unsqueeze(0),proc_depth.unsqueeze(0)
 
 	
 	def send_data_to_pepper(self,data):
