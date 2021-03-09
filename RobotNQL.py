@@ -5,7 +5,8 @@ import numpy as np
 
 class RobotNQL:
 	def __init__(self,epi):
-		self.device = "gpu" #torch.device("cuda" if torch.cuda.is_available() else "cpu")
+		#cpu or cuda
+		self.device = "cuda" #torch.device("cuda" if torch.cuda.is_available() else "cpu")
 		self.state_dim  = 84 #State dimensionality 84x84.
 		self.actions	= {'1','2','3','4'}
 		self.n_actions  = len(self.actions)
@@ -23,7 +24,7 @@ class RobotNQL:
 		self.iter=1
 		self.seq=""	
 
-		if(device=="gpu"):
+		if(self.device=="gpu"):
 			modelA='results/ep'+str(self.episode)+'/modelA_cuda.net'
 			modelB='results/ep'+str(self.episode)+'/modelB_cuda.net'
 		else:
