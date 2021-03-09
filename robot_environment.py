@@ -55,13 +55,12 @@ class Environment:
 		episode=torch.load('files/episode.dat')
 		dirname_rgb='dataset/RGB/ep'+str(episode)
 		dirname_dep='dataset/Depth/ep'+str(episode)
-		for i in range(1,self.state_size+1):
+		for i in range(self.state_size):
 
-			grayfile=dirname_rgb+'/image_'+str(step)+'_'+str(i)+'.png'
-			depthfile=dirname_dep+'/depth_'+str(step)+'_'+str(i)+'.png'
-			grayimage = Image.open(grayfile)
-			proc_image[i-1] = self.get_tensor_from_image(grayfile)
-			proc_depth[i-1] = self.get_tensor_from_image(depthfile)			
+			grayfile=dirname_rgb+'/image_'+str(step)+'_'+str(i+1)+'.png'
+			depthfile=dirname_dep+'/depth_'+str(step)+'_'+str(i+1)+'.png'
+			proc_image[i] = self.get_tensor_from_image(grayfile)
+			proc_depth[i] = self.get_tensor_from_image(depthfile)			
 
 		return proc_image.unsqueeze(0),proc_depth.unsqueeze(0)
 
