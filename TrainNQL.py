@@ -3,6 +3,7 @@ import torch.optim as optim
 import numpy as np
 import os
 from gmodel import Net
+from TransitionTable import TransitionTable
 
 class TrainNQL:
 	def __init__(self,epi,tsteps):
@@ -91,8 +92,42 @@ class TrainNQL:
 
 		if self.target_q and self.episode % self.target_q == 0:
 			print ("cloning")
-			self.target_network_A = self.network_A.clone()
-			self.target_network_B = self.network_B.clone()
+			self.target_network_A = torch.load(modelA)
+			self.target_network_B = torch.load(modelB)
+
+		self.transitions =TransitionTable(
+			stateDim = self.state_dim, numActions = self.n_actions,
+	        histLen = self.hist_len, gpu = self.gpu,
+	        maxSize = self.replay_memory, histType = self.histType,
+	        histSpacing = self.histSpacing,bufferSize = self.bufferSize)
+
+		self.numSteps = 0 #Number of perceived states.
+		self.lastState = None
+		self.lastDepth = None
+		self.lastAction = None
+		self.lastTerminal=None
+		self.wc = 0
+		parameter = self.network_A.parameters()
+		for p in parameter:
+			print(p)
+		#self.wA, self.dwA = self.network_A.parameters()
+
+		'''
+		self.dwA:zero()
+		self.deltasA = self.dwA:clone():fill(0)
+
+		self.tmpA= self.dwA:clone():fill(0)
+		self.gA  = self.dwA:clone():fill(0)
+		self.gA2 = self.dwA:clone():fill(0)
+
+		self.wB, self.dwB = self.network_B:getParameters()
+		self.dwB:zero()
+		self.deltasB = self.dwB:clone():fill(0)
+		self.tmpB= self.dwB:clone():fill(0)
+		self.gB  = self.dwB:clone():fill(0)
+		self.gB2 = self.dwB:clone():fill(0)
+		'''
+
 
 
 train = TrainNQL(1,10)
