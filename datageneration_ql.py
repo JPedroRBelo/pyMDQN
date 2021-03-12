@@ -4,14 +4,9 @@ from pathlib import Path
 from RobotNQL import RobotNQL
 from robot_environment import Environment
 
-'''
-require 'nn'
-require 'torch'
-require 'robot_environment'
-require 'image'
-require 'RobotNQL'
-require 'os'
-'''
+
+#from pympler.tracker import SummaryTracker
+
 
 t_steps=2050
 #device = "cpu"#torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -33,7 +28,6 @@ env = Environment()
 Path(dirname_rgb).mkdir(parents=True, exist_ok=True)
 Path(dirname_dep).mkdir(parents=True, exist_ok=True)
 Path(dirname_model).mkdir(parents=True, exist_ok=True)
-
 
 
 
@@ -130,7 +124,9 @@ def generate_data(episode):
 	
 
 def main():
+	#tracker = SummaryTracker()
 	generate_data(episode)
 	env.close_connection()
+	#tracker.print_diff()
 
 main()
