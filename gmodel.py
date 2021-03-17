@@ -16,9 +16,9 @@ stride1 = 3
 stride2 = 1
 poolsize=2
 
-class Net(nn.Module):
+class DQN(nn.Module):
 	def __init__(self):
-		super(Net, self).__init__()
+		super(DQN, self).__init__()
 		self.features = nn.Sequential(
 			nn.Conv2d(in_channels=nfeats,out_channels=nstates[0], kernel_size=kernel1,stride=stride1,padding=1),
 			nn.ReLU(),
