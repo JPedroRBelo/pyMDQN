@@ -32,6 +32,7 @@ class RobotNQL:
 		actionIndex = 0
 		if not terminal:
 			actionIndex = self.eGreedy(curState,curDepth, numSteps, steps, testing_ep)
+			print("Action: ",self.actions[actionIndex])
 			return actionIndex
 		else:
 			return 0

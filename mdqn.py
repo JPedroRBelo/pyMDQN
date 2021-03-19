@@ -9,6 +9,7 @@ import time
 import sys
 import subprocess
 from subprocess import Popen
+from os.path import abspath, dirname, join
 
 
 def getValue(filename):
@@ -49,7 +50,9 @@ if(len(sys.argv)>1):
 	if(sys.argv[1]=='true' or  sys.argv[1]=='True'):
 		execute_simulator = True
 		if(len(sys.argv)>2):
-			command = str(sys.argv[2])+command
+			directory = str(sys.argv[2])
+			command = abspath(join(directory,command))
+			#command = directory+command
 
 
 phase = getValue(file_phase)
