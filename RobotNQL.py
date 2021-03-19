@@ -8,7 +8,7 @@ class RobotNQL:
 		#cpu or cuda
 		self.device = "cpu" #torch.device("cuda" if torch.cuda.is_available() else "cpu")
 		self.state_dim  = 84 #State dimensionality 84x84.
-		self.actions	= {'1','2','3','4'}
+		self.actions	= ['1','2','3','4']
 		self.n_actions  = len(self.actions)
 		self.win=None
 		#epsilon annealing
@@ -17,32 +17,13 @@ class RobotNQL:
 		self.ep_end	 = 0.1
 		self.ep_endt	= 60000
 		self.learn_start= 0
+		self.episode=epi
 
+		file_modelGray='results/ep'+str(self.episode-1)+'/modelGray.net'
+		file_modelDepth='results/ep'+str(self.episode-1)+'/modelDepth.net'	
 
-		#self.bufferSize =  2000
-		self.episode=epi-1
-		self.iter=1
-		self.seq=""	
-
-		if(self.device=="cuda"):
-			modelA='results/ep'+str(self.episode)+'/modelA_cuda.net'
-			modelB='results/ep'+str(self.episode)+'/modelB_cuda.net'
-		else:
-			modelA='results/ep'+str(self.episode)+'/modelA_cpu.net'
-			modelB='results/ep'+str(self.episode)+'/modelB_cpu.net'
-
-
-		print(modelA)
-		print(modelB)
-
-		self.networkA=torch.load(modelA).to(self.device)
-		self.networkB=torch.load(modelB).to(self.device)
-
-		self.numSteps = 0 #Number of perceived states.
-		self.lastState = None
-		self.lastDepth = None
-		self.lastAction = None
-		self.lastTerminal = None
+		self.modelGray=torch.load(file_modelGray).to(self.device)
+		self.modelDepth=torch.load(file_modelDepth).to(self.device)
 
 
 	def perceive(self,reward, state, depth, terminal, testing, numSteps, steps, testing_ep):
@@ -69,15 +50,15 @@ class RobotNQL:
 		
 	def greedy(self,state,depth):
 		print("greedy")
-		self.networkA.eval()
-		self.networkB.eval()
+		self.modelGray.eval()
+		self.modelDepth.eval()
 		#state = state:float()
 		#depth=depth:float()
 		win=None
 		#q1 = np.array([0.20,0.40,0.20,0.40])
 		#q2 = np.array([0.20,0.40,0.20,0.40])
-		q1 = self.networkA.forward(state)
-		q2 = self.networkB.forward(depth)
+		q1 = self.modelGray.forward(state)
+		q2 = self.modelDepth.forward(depth)
 		ts = 0
 		td = 0
 		for i in range(self.n_actions):

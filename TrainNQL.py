@@ -3,12 +3,15 @@ import torch.optim as optim
 import numpy as np
 import os
 import re
-from gmodel import DQN
-from train_environment import get_data
+import random
+from network import DQN
 from collections import namedtuple
+import torch.nn.functional as F
+import torchvision.transforms as T
+from PIL import Image
 
 Transition = namedtuple('Transition',
-                        ('sgray','sdepth' 'action','reward'))
+                        ('sgray','sdepth','action','next_sgray','next_sdepth','reward'))
 
 
 class ReplayMemory(object):
@@ -33,62 +36,19 @@ class ReplayMemory(object):
 
 
 class TrainNQL:
-	def __init__(self,epi,tsteps):
+	def __init__(self,epi):
 		#cpu or cuda
 		self.device = "cuda" #torch.device("cuda" if torch.cuda.is_available() else "cpu")
 		self.state_dim  = 84 #State dimensionality 84x84.
-		self.actions	= ['1','2','3','4']
-		self.n_actions  = len(self.actions)
-		
-
-		self.t_steps= tsteps
+		self.state_size = 8
+		#self.t_steps= tsteps
 		self.t_eps = 30
-
-		#epsilon annealing
-		self.ep_start   = 1
-		self.ep         = self.ep_start #Exploration probability.
-		self.ep_end     = 0.1
-		#self.ep_endt    = self.t_eps*self.t_steps#30000
-		self.ep_endt    = 2000
-
-		#learning rate annealing
-		self.lr_start       = 0.00025 #Learning rate.
-		self.lr             = self.lr_start
-		self.lr_end         = self.lr
-		#self.lr_endt        = 100000   #replay memory size
-		self.wc             = 0  # L2 weight cost.
 		self.minibatch_size = 25
-		self.valid_size     = 500
-
 		# Q-learning parameters
 		self.discount       = 0.99 #Discount factor.
-
-
-		self.numSteps = 0
-		# Number of points to replay per learning step.
-		self.n_replay       = 1
-		# Number of steps after which learning starts.
-		self.learn_start    = 0
-		# Size of the transition table.
-		#self.replay_memory  = 14000--10000
-		#self.replay_memory  = self.t_eps*self.t_steps
 		self.replay_memory  = 60000
-
-
-		self.hist_len       = 8
-		self.clip_delta     = 1
-		self.target_q       = 4
-		self.bestq          = 0
-
-		self.gpu            = 1
-
-		self.ncols          = 1  #number of color channels in input
-		self.input_dims     = [8, self.state_dim, self.state_dim]
-		self.histType       = "linear"  # history type to use
-		self.histSpacing    = 1
-
 		self.bufferSize     =  2000
-
+		self.target_q       = 4
 		self.episode=epi-1
 
 		modelGray='results/ep'+str(self.episode)+'/modelGray.net'
@@ -129,6 +89,34 @@ class TrainNQL:
 		self.depth_optimizer = optim.RMSprop(self.depth_policy_net.parameters())
 		self.memory = ReplayMemory(self.replay_memory)
 
+	def get_tensor_from_image(self,file):
+		convert = T.Compose([T.ToPILImage(),
+			T.Resize((self.state_dim,self.state_dim), interpolation=Image.BILINEAR),
+			T.ToTensor()])
+		screen = Image.open(file)
+		screen = np.ascontiguousarray(screen, dtype=np.float32)/255
+		screen = torch.from_numpy(screen)
+		screen = convert(screen).unsqueeze(0).to(self.device)
+		return screen
+
+	def get_data(self,episode,tsteps):
+		images=torch.Tensor(tsteps,self.state_size,self.state_dim,self.state_dim).to(self.device)
+		depths=torch.Tensor(tsteps,self.state_size,self.state_dim,self.state_dim).to(self.device)
+		dirname_rgb='dataset/RGB/ep'+str(episode)
+		dirname_dep='dataset/Depth/ep'+str(episode)
+		for step in range(tsteps):
+			proc_image=torch.Tensor(self.state_size,self.state_dim,self.state_dim).to(self.device)
+			proc_depth=torch.Tensor(self.state_size,self.state_dim,self.state_dim).to(self.device)
+			dirname_rgb='dataset/RGB/ep'+str(episode)
+			dirname_dep='dataset/Depth/ep'+str(episode)
+			for i in range(self.state_size):
+				grayfile=dirname_rgb+'/image_'+str(step+1)+'_'+str(i+1)+'.png'
+				depthfile=dirname_dep+'/depth_'+str(step+1)+'_'+str(i+1)+'.png'
+				proc_image[i] = self.get_tensor_from_image(grayfile)
+				proc_depth[i] = self.get_tensor_from_image(depthfile)		
+			images[step]=proc_image
+			depths[step]=proc_depth	
+		return images,depths	
 
 	def load_data(self):
 		print("Loading images")
@@ -152,36 +140,92 @@ class TrainNQL:
 				k = self.bufferSize
 			print(k)
 
-
-		
-			images=torch.Tensor(k,self.hist_len,self.state_dim,self.state_dim)
-			depths=torch.Tensor(k,self.hist_len,self.state_dim,self.state_dim)	
 	
-			images,depths=get_data(i+1,k)	
+			images,depths=self.get_data(i+1,k)	
 			print ("Loading done")
-			aset = ['1','2','3','4']
 	
 			rewards=torch.load('files/reward_history.dat')
 			actions=torch.load('files/action_history.dat')
 			ep_rewards=torch.load('files/ep_rewards.dat')
-			for step  in range(k):
+			for step  in range(k-1):
 				terminal = 0
+				reward = 0
 				if rewards[i][step]>3:
-					self.memory.push(images[step],depths[step],actions[i][step],1)
+					reward = 1
 				elif rewards[i][step]<0:
-					self.memory.push(images[step],depths[step],actions[i][step],-0.1)
-				else:
-					self.memory.push(images[step],depths[step],actions[i][step],0)
+					reward = -0.1
+				reward = torch.tensor([reward], device=self.device)
+				action = torch.tensor([[actions[i][step]]], device=self.device, dtype=torch.long)
+				image = images[step].unsqueeze(0).to(self.device)
+				depth = depths[step].unsqueeze(0).to(self.device)
+				next_image = images[step+1].unsqueeze(0).to(self.device)
+				next_depth = depths[step+1].unsqueeze(0).to(self.device)
+				self.memory.push(image,depth,action,next_image,next_depth,reward)	
 
 
 	def train(self):
-		pass
-		#self.network_A.train()
-		#self.network_B.train()
+		if len(self.memory) < self.minibatch_size:
+		    return
+		transitions = self.memory.sample(self.minibatch_size)
+		# Transpose the batch (see https://stackoverflow.com/a/19343/3343043 for
+		# detailed explanation). This converts batch-array of Transitions
+		# to Transition of batch-arrays.
+		batch = Transition(*zip(*transitions))
+
+		# Compute a mask of non-final states and concatenate the batch elements
+		# (a final state would've been the one after which simulation ended)
+		gray_non_final_mask = torch.tensor(tuple(map(lambda s: s is not None,
+		                                      batch.next_sgray)), device=self.device, dtype=torch.bool)
+		gray_non_final_next_states = torch.cat([s for s in batch.next_sgray
+		                                            if s is not None])
+
+		depth_non_final_mask = torch.tensor(tuple(map(lambda s: s is not None,
+		                                      batch.next_sdepth)), device=self.device, dtype=torch.bool)
+		depth_non_final_next_states = torch.cat([s for s in batch.next_sdepth
+		                                            if s is not None])
+		sgray_batch = torch.cat(batch.sgray)
+		sdepth_batch = torch.cat(batch.sdepth)
+
+		action_batch = torch.cat(batch.action)
+		reward_batch = torch.cat(batch.reward)
+
+		# Compute Q(s_t, a) - the model computes Q(s_t), then we select the
+		# columns of actions taken. These are the actions which would've been taken
+		# for each batch state according to policy_net
+		sgray_action_values = self.gray_policy_net(sgray_batch).gather(1, action_batch)
+		sdepth_action_values = self.depth_policy_net(sdepth_batch).gather(1, action_batch)
+
+		# Compute V(s_{t+1}) for all next states.
+		# Expected values of actions for non_final_next_states are computed based
+		# on the "older" target_net; selecting their best reward with max(1)[0].
+		# This is merged based on the mask, such that we'll have either the expected
+		# state value or 0 in case the state was final.
+		next_sgray_values = torch.zeros(self.minibatch_size, device=self.device)
+		next_sgray_values[gray_non_final_mask] = self.gray_target_net(gray_non_final_next_states).max(1)[0].detach()
 
 
+		next_sdepth_values = torch.zeros(self.minibatch_size, device=self.device)
+		next_sdepth_values[depth_non_final_mask] = self.depth_target_net(depth_non_final_next_states).max(1)[0].detach()
+		# Compute the expected Q values
+		expected_sgray_action_values = (next_sgray_values * self.discount) + reward_batch
+		expected_sdepth_action_values = (next_sdepth_values * self.discount) + reward_batch
+
+		# Compute Huber loss
+		gray_loss = F.smooth_l1_loss(sgray_action_values, expected_sgray_action_values.unsqueeze(1))
+		depth_loss = F.smooth_l1_loss(sdepth_action_values, expected_sdepth_action_values.unsqueeze(1))
+
+		# Optimize the model
+		self.gray_optimizer.zero_grad()
+		gray_loss.backward()
+		for param in self.gray_policy_net.parameters():
+		    param.grad.data.clamp_(-1, 1)
+		self.gray_optimizer.step()
+
+		# Optimize the model
+		self.depth_optimizer.zero_grad()
+		depth_loss.backward()
+		for param in self.depth_policy_net.parameters():
+		    param.grad.data.clamp_(-1, 1)
+		self.depth_optimizer.step()
 
 
-
-train = TrainNQL(1,10)
-train.load_data()

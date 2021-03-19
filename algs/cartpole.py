@@ -357,10 +357,14 @@ def optimize_model():
     action_batch = torch.cat(batch.action)
     reward_batch = torch.cat(batch.reward)
 
+
     # Compute Q(s_t, a) - the model computes Q(s_t), then we select the
     # columns of actions taken. These are the actions which would've been taken
     # for each batch state according to policy_net
+    print('--------')
+    print(state_batch.shape)
     state_action_values = policy_net(state_batch).gather(1, action_batch)
+
 
     # Compute V(s_{t+1}) for all next states.
     # Expected values of actions for non_final_next_states are computed based
@@ -396,7 +400,7 @@ def optimize_model():
 # duration improvements.
 #
 
-num_episodes = 50
+num_episodes = 10
 for i_episode in range(num_episodes):
     # Initialize the environment and state
     env.reset()

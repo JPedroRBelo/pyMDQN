@@ -2,37 +2,23 @@ import torch
 import torch.nn as nn
 from pathlib import Path
 from RobotNQL import RobotNQL
-from robot_environment import Environment
+from environment import Environment
 
 
 #from pympler.tracker import SummaryTracker
 
 
-t_steps=2050
+t_steps=2000
 #device = "cpu"#torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 torch.manual_seed(torch.initial_seed())  
-win=None
-
-episode=torch.load('files/episode.dat')
-dirname_rgb='dataset/RGB/ep'+str(episode)
-dirname_dep='dataset/Depth/ep'+str(episode)
-dirname_model='results/ep'+str(episode)
-episode = int(episode)
-
-
-agent = RobotNQL(epi=episode)
-env = Environment()
-
-
-Path(dirname_rgb).mkdir(parents=True, exist_ok=True)
-Path(dirname_dep).mkdir(parents=True, exist_ok=True)
-Path(dirname_model).mkdir(parents=True, exist_ok=True)
 
 
 
 
-def generate_data(episode):
+
+
+def generate_data(episode,agent,env):
 	env = Environment()
 	recent_rewards=torch.load('recent_rewards.dat')
 	recent_actions=torch.load('recent_actions.dat')
@@ -45,7 +31,7 @@ def generate_data(episode):
 	init_step = 0
 	
 	if(len(reward_history)!=episode):
-		if((len(recent_rewards)>0) and (len(recent_rewards)<=t_steps)):
+		if((len(recent_rewards)>0) and (len(recent_rewards)<=t_steps+1)):
 			init_step = len(recent_rewards)
 		
 	'''
@@ -80,7 +66,7 @@ def generate_data(episode):
 	screen, depth, reward, terminal = env.perform_action('-',init_step+1)
 
 	step=init_step+1
-	while step <=t_steps:
+	while step <=t_steps+1:
 		print("Step=",step)
 		action_index=0
 		numSteps=(episode-1)*t_steps+step
@@ -125,8 +111,21 @@ def generate_data(episode):
 
 def main():
 	#tracker = SummaryTracker()
-	generate_data(episode)
-	env.close_connection()
-	#tracker.print_diff()
+	episode=torch.load('files/episode.dat')
+	dirname_rgb='dataset/RGB/ep'+str(episode)
+	dirname_dep='dataset/Depth/ep'+str(episode)
+	dirname_model='results/ep'+str(episode)
+	episode = int(episode)
 
-main()
+	agent = RobotNQL(epi=episode)
+	env = Environment()
+
+	Path(dirname_rgb).mkdir(parents=True, exist_ok=True)
+	Path(dirname_dep).mkdir(parents=True, exist_ok=True)
+	Path(dirname_model).mkdir(parents=True, exist_ok=True)
+
+	generate_data(episode,agent,env)
+	env.close_connection()
+
+if __name__ == "__main__":
+   main()

@@ -1,6 +1,6 @@
 import torch
 
-from gmodel import DQN
+from network import DQN
 from pathlib import Path
 
 modelGray = DQN()
