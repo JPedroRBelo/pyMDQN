@@ -36,6 +36,22 @@ class RobotNQL:
 			return actionIndex
 		else:
 			return 0
+	'''
+	def select_action(state):
+		global steps_done
+		sample = random.random()
+		eps_threshold = EPS_END + (EPS_START - EPS_END) * \
+			math.exp(-1. * steps_done / EPS_DECAY)
+		steps_done += 1
+		if sample > eps_threshold:
+			with torch.no_grad():
+			# t.max(1) will return largest column value of each row.
+			# second column on max result is index of where max element was
+			# found, so we pick action with the larger expected reward.
+				return self.modelGray(state).max(1)[1].view(1, 1)
+		else:
+			return torch.tensor([[random.randrange(n_actions)]], device=device, dtype=torch.long)
+	'''
 
 	def eGreedy(self,state,depth, numSteps , steps, testing_ep):
 		self.ep = testing_ep or (self.ep_end +
@@ -56,10 +72,10 @@ class RobotNQL:
 		#state = state:float()
 		#depth=depth:float()
 		win=None
-		#q1 = np.array([0.20,0.40,0.20,0.40])
-		#q2 = np.array([0.20,0.40,0.20,0.40])
-		q1 = self.modelGray.forward(state)
-		q2 = self.modelDepth.forward(depth)
+		q1 = self.modelGray.forward(state).cpu().detach().numpy()[0]
+		q2 = self.modelDepth.forward(depth).cpu().detach().numpy()[0]
+		print(q1)
+		print(q2)
 		ts = 0
 		td = 0
 		for i in range(self.n_actions):
