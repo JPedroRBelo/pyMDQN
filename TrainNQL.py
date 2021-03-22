@@ -50,7 +50,7 @@ class TrainNQL:
 		self.replay_memory  = 60000
 		self.bufferSize     =  2000
 		self.target_q       = 4
-		self.episode=epi-1
+		self.episode=int(epi)-1
 
 		modelGray='results/ep'+str(self.episode)+'/modelGray.net'
 		modelDepth='results/ep'+str(self.episode)+'/modelDepth.net'
@@ -149,8 +149,8 @@ class TrainNQL:
 			actions=torch.load('files/action_history.dat')
 			ep_rewards=torch.load('files/ep_rewards.dat')
 			for step  in range(k-1):
-				terminal = 0
-				reward = 0
+				#print(len(rewards),i)
+				#print(len(rewards[i]), step)
 				if rewards[i][step]>3:
 					reward = 1
 				elif rewards[i][step]<0:

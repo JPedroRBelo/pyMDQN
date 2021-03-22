@@ -42,8 +42,7 @@ t_episodes=30
 
 file_phase = 'files/phase.txt'
 
-episode=torch.load('files/episode.dat')
-
+episode=int(torch.load('files/episode.dat'))
 
 command = './simDRLSR.x86_64'
 execute_simulator = False

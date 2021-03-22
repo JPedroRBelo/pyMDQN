@@ -15,7 +15,7 @@ from TrainNQL import TrainNQL
 def main():	
 	torch.cuda.empty_cache()
 	torch.manual_seed(torch.initial_seed())  
-	episode=torch.load('files/episode.dat')
+	episode=int(torch.load('files/episode.dat'))
 
 	agent=TrainNQL(epi=episode)
 
