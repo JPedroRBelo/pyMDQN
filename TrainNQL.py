@@ -38,7 +38,8 @@ class ReplayMemory(object):
 class TrainNQL:
 	def __init__(self,epi):
 		#cpu or cuda
-		self.device = "cuda" #torch.device("cuda" if torch.cuda.is_available() else "cpu")
+		torch.cuda.empty_cache()
+		self.device = "cpu" #torch.device("cuda" if torch.cuda.is_available() else "cpu")
 		self.state_dim  = 84 #State dimensionality 84x84.
 		self.state_size = 8
 		#self.t_steps= tsteps

@@ -27,6 +27,7 @@ def openSim(process):
 	time.sleep(5)
 	process = Popen(command)
 	time.sleep(5)
+	return process
 
 def killSim(process):
 	process.terminate()		
@@ -65,7 +66,7 @@ for i in range(episode,t_episodes):
 	if(phase == 0):
 		print("Episode: ",i," collection data.")
 
-		if execute_simulator: openSim(process)
+		if execute_simulator: process = openSim(process)
 		recent_rewards=torch.load('recent_rewards.dat')
 		reward_history=torch.load('files/reward_history.dat')
 		print(len(recent_rewards))

@@ -8,11 +8,12 @@ from TrainNQL import TrainNQL
 
 
 
-device = "gpu"#torch.device("cuda" if torch.cuda.is_available() else "cpu")
+#device = "cuda"#torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 
 def main():	
+	torch.cuda.empty_cache()
 	torch.manual_seed(torch.initial_seed())  
 	episode=torch.load('files/episode.dat')
 
