@@ -2,8 +2,6 @@ dataset/RGB/ep*
 dataset/Depth/ep*
 #simMDQN/dataset/*
 dataset.*
-analysis.lua
-analysis.py
 test.csv
 Dockerfile
 
