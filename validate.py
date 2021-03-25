@@ -14,10 +14,6 @@ t_steps=2000
 torch.manual_seed(torch.initial_seed())  
 
 
-
-
-
-
 def generate_data(episode,agent,env):
 	env = Environment()
 	recent_rewards=torch.load('recent_rewards.dat')
@@ -27,7 +23,10 @@ def generate_data(episode,agent,env):
 	ep_rewards=torch.load('files/ep_rewards.dat')
 
 	aset = ['1','2','3','4']
-	testing = False
+	#Validation flag = -1
+	#Exploration = 0 or False
+	#Testing exploration value = [0 < testing <= 1]
+	testing = -1
 	init_step = 0
 	
 	if(len(reward_history)!=episode):
@@ -70,7 +69,7 @@ def generate_data(episode,agent,env):
 		print("Step=",step)
 		action_index=0
 		numSteps=(episode-1)*t_steps+step
-		action_index = agent.perceive(screen,depth, terminal, False, numSteps,step,testing)		
+		action_index = agent.perceive(screen,depth, terminal, False, numSteps,step,testing)
 		step=step+1		
 		if action_index == None:
 				action_index=1

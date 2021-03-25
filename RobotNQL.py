@@ -26,7 +26,7 @@ class RobotNQL:
 		self.modelDepth=torch.load(file_modelDepth).to(self.device)
 
 
-	def perceive(self,reward, state, depth, terminal, testing, numSteps, steps, testing_ep):
+	def perceive(self, state, depth, terminal, testing, numSteps, steps, testing_ep):
 		curState = state.to(self.device)
 		curDepth = depth.to(self.device)
 		actionIndex = 0
