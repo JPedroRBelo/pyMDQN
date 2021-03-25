@@ -7,7 +7,7 @@ class RobotNQL:
 	def __init__(self,epi):
 		#cpu or cuda
 		self.device = "cpu" #torch.device("cuda" if torch.cuda.is_available() else "cpu")
-		self.state_dim  = 84 #State dimensionality 84x84.
+		self.state_dim  = 198 #State dimensionality 84x84.
 		self.actions	= ['1','2','3','4']
 		self.n_actions  = len(self.actions)
 		self.win=None

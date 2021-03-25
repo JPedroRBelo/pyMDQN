@@ -40,7 +40,7 @@ class TrainNQL:
 		#cpu or cuda
 		torch.cuda.empty_cache()
 		self.device = "cpu" #torch.device("cuda" if torch.cuda.is_available() else "cpu")
-		self.state_dim  = 84 #State dimensionality 84x84.
+		self.state_dim  = 198 #State dimensionality 84x84.
 		self.state_size = 8
 		#self.t_steps= tsteps
 		self.t_eps = 30

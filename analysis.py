@@ -83,13 +83,13 @@ for i in range(len(actions)):
 	
 	
 	print('###################')
-	print('Epoch\t',i+1)
-	print('HS Suc.\t',hspos)
-	print('HS Fail\t',hsneg)
-	print('Acuracy\t',((hspos)/(hspos+hsneg)))
+	print('Epoch\t',i+1)	
 	print('Wait\t',wait)
 	print('Look\t',look)
-	print('Wave\t',wave)	
+	print('Wave\t',wave)
+	print('HS Suc.\t',hspos)
+	print('HS Fail\t',hsneg)
+	print('Acuracy\t',((hspos)/(hspos+hsneg)))	
 
 
 
