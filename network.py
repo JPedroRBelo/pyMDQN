@@ -2,14 +2,12 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-
-gpu=1
 noutputs=4
 nfeats=8
 nstates=[16,32,64,256]
 #kernel={9,5}
-kernel1 = 4
-kernel2 = 2
+kernel1 = 9
+kernel2 = 5
 stride1 = 3
 stride2 = 1
 poolsize=2

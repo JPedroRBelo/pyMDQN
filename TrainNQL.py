@@ -9,6 +9,7 @@ from collections import namedtuple
 import torch.nn.functional as F
 import torchvision.transforms as T
 from PIL import Image
+from sys import getsizeof
 
 Transition = namedtuple('Transition',
                         ('sgray','sdepth','action','next_sgray','next_sdepth','reward'))
@@ -100,7 +101,7 @@ class TrainNQL:
 		screen = convert(screen).unsqueeze(0).to(self.device)
 		return screen
 
-	def get_data(self,episode,tsteps):
+	def get_data(self,episode,tsteps):	
 		images=torch.Tensor(tsteps,self.state_size,self.state_dim,self.state_dim).to(self.device)
 		depths=torch.Tensor(tsteps,self.state_size,self.state_dim,self.state_dim).to(self.device)
 		dirname_rgb='dataset/RGB/ep'+str(episode)
@@ -141,16 +142,18 @@ class TrainNQL:
 				k = self.bufferSize
 			print(k)
 
-	
+			os.system("free -h")
+			#with torch.no_grad():
 			images,depths=self.get_data(i+1,k)	
 			print ("Loading done")
-	
+			
 			rewards=torch.load('files/reward_history.dat')
 			actions=torch.load('files/action_history.dat')
 			ep_rewards=torch.load('files/ep_rewards.dat')
 			for step  in range(k-1):
 				#print(len(rewards),i)
 				#print(len(rewards[i]), step)
+				reward = 0
 				if rewards[i][step]>3:
 					reward = 1
 				elif rewards[i][step]<0:
@@ -161,7 +164,9 @@ class TrainNQL:
 				depth = depths[step].unsqueeze(0).to(self.device)
 				next_image = images[step+1].unsqueeze(0).to(self.device)
 				next_depth = depths[step+1].unsqueeze(0).to(self.device)
-				self.memory.push(image,depth,action,next_image,next_depth,reward)	
+				self.memory.push(image,depth,action,next_image,next_depth,reward)
+				#print("Memory size: ",getsizeof(self.memory))
+				#torch.cuda.empty_cache()	
 
 
 	def train(self):

@@ -59,6 +59,8 @@ phase = getValue(file_phase)
 process = Popen('false') # something long running
 signal.signal(signal.SIGINT, signalHandler)
 
+print(episode,t_episodes)
+
 for i in range(episode,t_episodes+1):
 	phase = getValue(file_phase)
 
