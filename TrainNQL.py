@@ -187,6 +187,30 @@ class TrainNQL:
 		if len(self.memory) < self.minibatch_size:
 		    return
 		transitions = self.memory.sample(self.minibatch_size)
+		
+		aux_transitions = []
+		for t in transitions:
+			proc_sgray=torch.Tensor(self.state_size,self.state_dim,self.state_dim).to(self.device)
+			proc_sdepth=torch.Tensor(self.state_size,self.state_dim,self.state_dim).to(self.device)
+			proc_next_sgray=torch.Tensor(self.state_size,self.state_dim,self.state_dim).to(self.device)
+			proc_next_sdepth=torch.Tensor(self.state_size,self.state_dim,self.state_dim).to(self.device)
+			count = 0
+			for sgray,sdepth,next_sgray,next_sdepth in zip(t.sgray,t.sdepth,t.next_sgray,t.next_sdepth):
+				proc_sgray[count] = self.get_tensor_from_image(sgray)
+				proc_sdepth[count] = self.get_tensor_from_image(sdepth)	
+				proc_next_sgray[count] = self.get_tensor_from_image(next_sgray)
+				proc_next_sdepth[count] = self.get_tensor_from_image(next_sdepth)	
+				count += 1
+			
+			proc_sgray = proc_sgray.unsqueeze(0).to(self.device)
+			proc_sdepth = proc_sdepth.unsqueeze(0).to(self.device)
+			proc_next_sgray = proc_next_sgray.unsqueeze(0).to(self.device)
+			proc_next_sdepth = proc_next_sdepth.unsqueeze(0).to(self.device)
+			#('sgray','sdepth','action','next_sgray','next_sdepth','reward')
+			one_transition = Transition(proc_sgray,proc_sdepth,t.action,proc_next_sgray,proc_next_sdepth,t.reward)
+			aux_transitions.append(one_transition)
+		transitions = aux_transitions
+
 		# Transpose the batch (see https://stackoverflow.com/a/19343/3343043 for
 		# detailed explanation). This converts batch-array of Transitions
 		# to Transition of batch-arrays.
