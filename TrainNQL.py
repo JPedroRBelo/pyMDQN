@@ -30,7 +30,8 @@ class ReplayMemory(object):
 		self.position = (self.position + 1) % self.capacity
 
 	def sample(self, batch_size):
-		return random.sample(self.memory, batch_size)
+		replay_sample = random.sample(self.memory, batch_size)
+		return replay_sample
 
 	def __len__(self):
 		return len(self.memory)
@@ -102,22 +103,31 @@ class TrainNQL:
 		return screen
 
 	def get_data(self,episode,tsteps):	
-		images=torch.Tensor(tsteps,self.state_size,self.state_dim,self.state_dim).to(self.device)
-		depths=torch.Tensor(tsteps,self.state_size,self.state_dim,self.state_dim).to(self.device)
+		#images=torch.Tensor(tsteps,self.state_size,self.state_dim,self.state_dim).to(self.device)
+		#depths=torch.Tensor(tsteps,self.state_size,self.state_dim,self.state_dim).to(self.device)
+		images = []
+		depths = []
 		dirname_rgb='dataset/RGB/ep'+str(episode)
 		dirname_dep='dataset/Depth/ep'+str(episode)
 		for step in range(tsteps):
-			proc_image=torch.Tensor(self.state_size,self.state_dim,self.state_dim).to(self.device)
-			proc_depth=torch.Tensor(self.state_size,self.state_dim,self.state_dim).to(self.device)
+			#proc_image=torch.Tensor(self.state_size,self.state_dim,self.state_dim).to(self.device)
+			#proc_depth=torch.Tensor(self.state_size,self.state_dim,self.state_dim).to(self.device)
+			proc_image = []
+			proc_depth = []
+
 			dirname_rgb='dataset/RGB/ep'+str(episode)
 			dirname_dep='dataset/Depth/ep'+str(episode)
 			for i in range(self.state_size):
 				grayfile=dirname_rgb+'/image_'+str(step+1)+'_'+str(i+1)+'.png'
 				depthfile=dirname_dep+'/depth_'+str(step+1)+'_'+str(i+1)+'.png'
-				proc_image[i] = self.get_tensor_from_image(grayfile)
-				proc_depth[i] = self.get_tensor_from_image(depthfile)		
-			images[step]=proc_image
-			depths[step]=proc_depth	
+				#proc_image[i] = self.get_tensor_from_image(grayfile)
+				#proc_depth[i] = self.get_tensor_from_image(depthfile)	
+				proc_image.append(grayfile)
+				proc_depth.append(depthfile)	
+			#images[step]=proc_image
+			#depths[step]=proc_depth
+			images.append(proc_image)
+			depths.append(proc_depth)	
 		return images,depths	
 
 	def load_data(self):
@@ -160,10 +170,14 @@ class TrainNQL:
 					reward = -0.1
 				reward = torch.tensor([reward], device=self.device)
 				action = torch.tensor([[actions[i][step]]], device=self.device, dtype=torch.long)
-				image = images[step].unsqueeze(0).to(self.device)
-				depth = depths[step].unsqueeze(0).to(self.device)
-				next_image = images[step+1].unsqueeze(0).to(self.device)
-				next_depth = depths[step+1].unsqueeze(0).to(self.device)
+				#image = images[step].unsqueeze(0).to(self.device)
+				#depth = depths[step].unsqueeze(0).to(self.device)
+				#next_image = images[step+1].unsqueeze(0).to(self.device)
+				#next_depth = depths[step+1].unsqueeze(0).to(self.device)
+				image = images[step]
+				depth = depths[step]
+				next_image = images[step+1]
+				next_depth = depths[step+1]
 				self.memory.push(image,depth,action,next_image,next_depth,reward)
 				#print("Memory size: ",getsizeof(self.memory))
 				#torch.cuda.empty_cache()	
@@ -177,6 +191,7 @@ class TrainNQL:
 		# detailed explanation). This converts batch-array of Transitions
 		# to Transition of batch-arrays.
 		batch = Transition(*zip(*transitions))
+		#print(batch.sgray)
 
 		# Compute a mask of non-final states and concatenate the batch elements
 		# (a final state would've been the one after which simulation ended)

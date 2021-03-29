@@ -95,7 +95,7 @@ for i in range(episode,t_episodes+1):
 		print("Sending signal to kill simulator")
 		if execute_simulator: killSim(process)
 		setValue('flag_simulator.txt',9)
-		time.sleep(10)		
+		time.sleep(1)		
 		#Execute train phase script
 		train.main()
 
