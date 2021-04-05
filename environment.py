@@ -16,12 +16,12 @@ class Environment:
 		#self.r_len=8
 		self.raw_frame_height= 320
 		self.raw_frame_width=  240
-		self.proc_frame_size=198
+		self.proc_frame_size=84
 		self.state_size=8
 		self.frame_per_sec=1
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		port = 12375        
-		host='192.168.0.11'
+		#host='192.168.0.11'
 		#host='10.62.6.208'
 		host='127.0.0.1'
 		flag_connection = False
