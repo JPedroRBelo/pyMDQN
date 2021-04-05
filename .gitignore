@@ -4,6 +4,7 @@ dataset/Depth/ep*
 dataset.*
 test.csv
 Dockerfile
+algs/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
