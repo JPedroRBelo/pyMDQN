@@ -38,7 +38,7 @@ def signalHandler(sig, frame):
     sys.exit(0)
 
 
-t_episodes=30
+t_episodes=60
 
 file_phase = 'files/phase.txt'
 

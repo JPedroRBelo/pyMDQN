@@ -10,7 +10,8 @@ from TrainNQL import TrainNQL
 
 #device = "cuda"#torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-
+cycles = 50
+trains = 15
 
 def main():	
 	torch.cuda.empty_cache()
@@ -21,9 +22,9 @@ def main():
 
 	target_net=4
 	agent.load_data()
-	for j in range(50):
-		print("\nTrain= "+str(j+1)+"/50")
-		for i in range(10):
+	for j in range(cycles):
+		print("\nTrain= "+str(j+1)+"/"+str(cycles))
+		for i in range(trains):
 			print("epoch ",i+1)
 			agent.train()
 		agent.gray_target_net=copy.deepcopy(agent.gray_policy_net)

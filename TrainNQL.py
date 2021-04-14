@@ -46,10 +46,10 @@ class TrainNQL:
 		self.state_size = 8
 		#self.t_steps= tsteps
 		self.t_eps = 30
-		self.minibatch_size = 25
+		self.minibatch_size = 128
 		# Q-learning parameters
 		self.discount       = 0.99 #Discount factor.
-		self.replay_memory  = 60000
+		self.replay_memory  = 120000
 		self.bufferSize     =  2000
 		self.target_q       = 4
 		self.episode=int(epi)-1
