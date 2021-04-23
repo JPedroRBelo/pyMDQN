@@ -1,22 +1,23 @@
 import torch
 import torch.optim as optim
 import numpy as np
+import config as cfg
 
 
 class RobotNQL:
 	def __init__(self,epi):
 		#cpu or cuda
 		self.device = "cpu" #torch.device("cuda" if torch.cuda.is_available() else "cpu")
-		self.state_dim  = 198 #State dimensionality 84x84.
-		self.actions	= ['1','2','3','4']
+		self.state_dim  = cfg.proc_frame_size #State dimensionality 84x84.
+		self.actions	= cfg.actions
 		self.n_actions  = len(self.actions)
 		self.win=None
 		#epsilon annealing
-		self.ep_start   = 1.0
+		self.ep_start   = cfg.ep_start
 		self.ep		 = self.ep_start #Exploration probability.
-		self.ep_end	 = 0.1
-		self.ep_endt	= 60000
-		self.learn_start= 0
+		self.ep_end	 = cfg.ep_end
+		self.ep_endt	= cfg.ep_endt
+		self.learn_start= cfg.learn_start
 		self.episode=epi
 
 		file_modelGray='results/ep'+str(self.episode-1)+'/modelGray.net'

@@ -3,12 +3,13 @@ import torch.nn as nn
 from pathlib import Path
 from RobotNQL import RobotNQL
 from environment import Environment
+import config as cfg
 
 
 #from pympler.tracker import SummaryTracker
 
 
-t_steps=2000
+t_steps=cfg.t_steps
 #device = "cpu"#torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 torch.manual_seed(torch.initial_seed())  
@@ -22,7 +23,7 @@ def generate_data(episode,agent,env):
 	action_history=torch.load('files/action_history.dat')
 	ep_rewards=torch.load('files/ep_rewards.dat')
 
-	aset = ['1','2','3','4']
+	aset = cfg.actions
 	#Validation flag = -1
 	#Exploration = 0 or False
 	#Testing exploration value = [0 < testing <= 1]

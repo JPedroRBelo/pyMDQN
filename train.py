@@ -5,13 +5,14 @@ from PIL import Image
 from pathlib import Path
 import copy
 from TrainNQL import TrainNQL
+import config as cfg
 
 
 
 #device = "cuda"#torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-cycles = 50
-trains = 15
+cycles = cfg.cycles
+trains = cfg.trains
 
 def main():	
 	torch.cuda.empty_cache()

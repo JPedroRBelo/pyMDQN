@@ -10,6 +10,7 @@ import torch.nn.functional as F
 import torchvision.transforms as T
 from PIL import Image
 from sys import getsizeof
+import config as cfg
 
 Transition = namedtuple('Transition',
                         ('sgray','sdepth','action','next_sgray','next_sdepth','reward'))
@@ -41,17 +42,17 @@ class TrainNQL:
 	def __init__(self,epi):
 		#cpu or cuda
 		torch.cuda.empty_cache()
-		self.device = "cpu" #torch.device("cuda" if torch.cuda.is_available() else "cpu")
-		self.state_dim  = 198 #State dimensionality 84x84.
-		self.state_size = 8
+		self.device = cfg.device #torch.device("cuda" if torch.cuda.is_available() else "cpu")
+		self.state_dim  = cfg.proc_frame_size #State dimensionality 84x84.
+		self.state_size = cfg.state_size
 		#self.t_steps= tsteps
-		self.t_eps = 30
-		self.minibatch_size = 128
+		self.t_eps = cfg.t_eps
+		self.minibatch_size = cfg.minibatch_size
 		# Q-learning parameters
-		self.discount       = 0.99 #Discount factor.
-		self.replay_memory  = 120000
-		self.bufferSize     =  2000
-		self.target_q       = 4
+		self.discount       = cfg.discount #Discount factor.
+		self.replay_memory  = cfg.replay_memory
+		self.bufferSize     =  cfg.bufferSize
+		self.target_q       = cfg.target_q
 		self.episode=int(epi)-1
 
 		modelGray='results/ep'+str(self.episode)+'/modelGray.net'

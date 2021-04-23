@@ -7,6 +7,8 @@ import numpy as np
 import socket
 import time
 from PIL import Image
+import config as cfg
+
 
 
 class Environment:
@@ -14,16 +16,13 @@ class Environment:
 		# if gpu is to be used
 		#self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 		#self.r_len=8
-		self.raw_frame_height= 320
-		self.raw_frame_width=  240
-		self.proc_frame_size=198
-		self.state_size=8
-		self.frame_per_sec=1
+		self.raw_frame_height= cfg.raw_frame_height
+		self.raw_frame_width= cfg.raw_frame_width
+		self.proc_frame_size= cfg.proc_frame_size
+		self.state_size=cfg.state_size
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		port = 12375        
-		host='192.168.0.11'
-		#host='10.62.6.208'
-		host='127.0.0.1'
+		port = cfg.port        
+		host=cfg.port
 		flag_connection = False
 		
 		while(not flag_connection):
