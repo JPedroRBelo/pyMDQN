@@ -83,6 +83,11 @@ def generate_data(episode,agent,env):
 		if step >= t_steps:
 			terminal=1
 
+		#handshake reward calc
+		if(aset[action_index]=='4'):
+			reward = min(reward,cfg.hs_success_reward)
+			reward = max(reward,cfg.hs_fail_reward)
+
 		rewards.append(reward)
 		actions.append(action_index)
 		total_reward=total_reward+reward

@@ -164,11 +164,11 @@ class TrainNQL:
 			for step  in range(k-1):
 				#print(len(rewards),i)
 				#print(len(rewards[i]), step)
-				reward = 0
-				if rewards[i][step]>3:
-					reward = 1
+				reward = cfg.neutral_reward
+				if rewards[i][step]>=1:
+					reward = cfg.hs_success_reward
 				elif rewards[i][step]<0:
-					reward = -0.1
+					reward = cfg.hs_fail_reward
 				reward = torch.tensor([reward], device=self.device)
 				action = torch.tensor([[actions[i][step]]], device=self.device, dtype=torch.long)
 				#image = images[step].unsqueeze(0).to(self.device)

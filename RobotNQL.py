@@ -75,8 +75,6 @@ class RobotNQL:
 		win=None
 		q1 = self.modelGray.forward(state).cpu().detach().numpy()[0]
 		q2 = self.modelDepth.forward(depth).cpu().detach().numpy()[0]
-		print(q1)
-		print(q2)
 		ts = 0
 		td = 0
 		for i in range(self.n_actions):

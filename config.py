@@ -30,4 +30,8 @@ replay_memory  = 120000
 bufferSize     =  2000
 target_q       = 4
 
+#rewards
+neutral_reward = 0
+hs_success_reward = 1
+hs_fail_reward = -0.5
 
