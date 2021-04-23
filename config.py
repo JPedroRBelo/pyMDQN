@@ -3,7 +3,7 @@ t_steps = 2000
 #environment
 raw_frame_height = 320
 raw_frame_width = 240
-proc_frame_size = 84
+proc_frame_size = 198
 state_size = 8
 port = 12375        
 #host='192.168.0.11'
@@ -20,11 +20,11 @@ ep_endt	= 60000
 learn_start= 0
 #training
 cycles = 50
-trains = 15
+trains = 10
 #trainNQL
 device = "cpu"#cuda
 t_eps = 30
-minibatch_size = 128
+minibatch_size = 25
 discount       = 0.99 #Discount factor.
 replay_memory  = 120000
 bufferSize     =  2000

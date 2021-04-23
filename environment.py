@@ -22,7 +22,7 @@ class Environment:
 		self.state_size=cfg.state_size
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		port = cfg.port        
-		host=cfg.port
+		host=cfg.host
 		flag_connection = False
 		
 		while(not flag_connection):
