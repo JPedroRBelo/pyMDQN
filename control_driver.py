@@ -3,6 +3,7 @@ import torch.nn as nn
 from pathlib import Path
 from RobotNQL import RobotNQL
 from environment import Environment
+from pynput import keyboard
 
 
 
@@ -31,10 +32,25 @@ def generate_data(episode,agent,env):
 		print("Step=",step)
 		action_index=0
 		numSteps=(episode-1)*t_steps+step
-		action_index = input("1 :Wait\n2 :Look\n3: Wave\n4: Handshake\n")
+		
+		print("1 :Wait\n2 :Look\n3: Wave\n4: Handshake\n")
+		with keyboard.Events() as events:
+			# Block for as much as possible
+			event = events.get(1e6)
+			if event.key == keyboard.KeyCode.from_char('1'):
+				action_index = 1	
+			elif event.key == keyboard.KeyCode.from_char('2'):
+				action_index = 2	
+			elif event.key == keyboard.KeyCode.from_char('3'):
+				action_index = 3	
+			elif event.key == keyboard.KeyCode.from_char('4'):
+				action_index = 4				
+			else:
+				print('\nIncorrect key... sending "Wait" command to robot!')
+				action_index = 1
+
+		
 		action_index = int(action_index)-1
-
-
 		step=step+1		
 		if action_index == None:
 				action_index=1
