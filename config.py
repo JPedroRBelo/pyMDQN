@@ -10,7 +10,7 @@ port = 12375
 #host='10.62.6.208'
 host='127.0.0.1'
 #mdqn
-t_episodes=30
+t_episodes=60
 #NQL
 actions	= ['1','2','3','4']
 #epsilon annealing
@@ -19,14 +19,14 @@ ep_end	 = 0.1
 ep_endt	= 28000
 learn_start= 0
 #training
-cycles = 50
+cycles = 100
 trains = 10
 #trainNQL
 device = "cpu"#cuda
 t_eps = 30
-minibatch_size = 25
+minibatch_size = 50
 discount       = 0.99 #Discount factor.
-replay_memory  = 60000
+replay_memory  = 12000
 bufferSize     =  2000
 target_q       = 4
 
