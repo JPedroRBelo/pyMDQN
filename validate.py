@@ -23,6 +23,7 @@ def generate_data(episode,agent,env):
 	ep_rewards=torch.load('files/ep_rewards.dat')
 
 	aset = ['1','2','3','4']
+	#aset = ['2','2','2','2']
 	#Validation flag = -1
 	#Exploration = 0 or False
 	#Testing exploration value = [0 < testing <= 1]
