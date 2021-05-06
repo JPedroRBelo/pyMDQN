@@ -185,9 +185,10 @@ class TrainNQL:
 
 
 	def train(self):
-		if len(self.memory) < self.minibatch_size:
+		if len(self.memory) < self.bufferSize:
 		    return
-		transitions = self.memory.sample(self.minibatch_size)
+		transitions = self.memory.sample(self.bufferSize)
+		
 		
 		aux_transitions = []
 		for t in transitions:
