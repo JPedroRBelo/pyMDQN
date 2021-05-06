@@ -10,6 +10,7 @@ import sys
 import subprocess
 from subprocess import Popen
 from os.path import abspath, dirname, join
+import config as cfg
 
 
 def getValue(filename):
@@ -38,7 +39,7 @@ def signalHandler(sig, frame):
     sys.exit(0)
 
 
-t_episodes=30
+t_episodes=cfg.t_episodes
 
 file_phase = 'files/phase.txt'
 
