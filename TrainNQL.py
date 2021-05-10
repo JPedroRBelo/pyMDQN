@@ -39,7 +39,7 @@ class ReplayMemory(object):
 
 
 class TrainNQL:
-	def __init__(self,epi):
+	def __init__(self,epi,validation=False):
 		#cpu or cuda
 		torch.cuda.empty_cache()
 		self.device = cfg.device #torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -53,7 +53,11 @@ class TrainNQL:
 		self.replay_memory  = cfg.replay_memory
 		self.bufferSize     =  cfg.bufferSize
 		self.target_q       = cfg.target_q
-		self.episode=int(epi)-1
+		self.validation = validation
+		if(validation):
+			self.episode = epi
+		else:
+			self.episode=int(epi)-1
 
 		modelGray='results/ep'+str(self.episode)+'/modelGray.net'
 		modelDepth='results/ep'+str(self.episode)+'/modelDepth.net'
