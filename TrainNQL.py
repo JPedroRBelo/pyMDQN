@@ -10,7 +10,7 @@ import torch.nn.functional as F
 import torchvision.transforms as T
 from PIL import Image
 from sys import getsizeof
-import config as cfg
+import config as dcfg #defaultConfig
 
 Transition = namedtuple('Transition',
                         ('sgray','sdepth','action','next_sgray','next_sdepth','reward'))
@@ -39,7 +39,7 @@ class ReplayMemory(object):
 
 
 class TrainNQL:
-	def __init__(self,epi,validation=False):
+	def __init__(self,epi,cfg=dcfg,validation=False):
 		#cpu or cuda
 		torch.cuda.empty_cache()
 		self.device = cfg.device #torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -58,6 +58,7 @@ class TrainNQL:
 			self.episode = epi
 		else:
 			self.episode=int(epi)-1
+		self.cfg = cfg
 
 		modelGray='results/ep'+str(self.episode)+'/modelGray.net'
 		modelDepth='results/ep'+str(self.episode)+'/modelDepth.net'
@@ -80,7 +81,7 @@ class TrainNQL:
 			self.depth_target_net = DQN().to(self.device)
 			
 
-		if self.target_q and self.episode % self.target_q == 0:
+		if not validation and self.target_q and self.episode % self.target_q == 0:
 			print ("cloning")
 			self.depth_policy_net = DQN().to(self.device)
 			self.depth_target_net = DQN().to(self.device)
@@ -157,7 +158,7 @@ class TrainNQL:
 				k = self.bufferSize
 			print(k)
 
-			os.system("free -h")
+			#os.system("free -h")
 			#with torch.no_grad():
 			images,depths=self.get_data(i+1,k)	
 			print ("Loading done")
@@ -168,11 +169,11 @@ class TrainNQL:
 			for step  in range(k-1):
 				#print(len(rewards),i)
 				#print(len(rewards[i]), step)
-				reward = cfg.neutral_reward
+				reward = self.cfg.neutral_reward
 				if rewards[i][step]>=1:
-					reward = cfg.hs_success_reward
+					reward = self.cfg.hs_success_reward
 				elif rewards[i][step]<0:
-					reward = cfg.hs_fail_reward
+					reward = self.cfg.hs_fail_reward
 				reward = torch.tensor([reward], device=self.device)
 				action = torch.tensor([[actions[i][step]]], device=self.device, dtype=torch.long)
 				#image = images[step].unsqueeze(0).to(self.device)

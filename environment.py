@@ -7,12 +7,12 @@ import numpy as np
 import socket
 import time
 from PIL import Image
-import config as cfg
+import config as dcfg #default config
 
 
 
 class Environment:
-	def __init__(self):
+	def __init__(self,cfg=dcfg):
 		# if gpu is to be used
 		#self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 		#self.r_len=8
