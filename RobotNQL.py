@@ -5,7 +5,7 @@ import config as dcfg
 
 
 class RobotNQL:
-	def __init__(self,epi,cfg=dcfg,cvalidation=False):
+	def __init__(self,epi,cfg=dcfg,validation=False):
 		#cpu or cuda
 		self.device = "cpu" #torch.device("cuda" if torch.cuda.is_available() else "cpu")
 		self.state_dim  = cfg.proc_frame_size #State dimensionality 84x84.

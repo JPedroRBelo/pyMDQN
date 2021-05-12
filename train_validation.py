@@ -13,6 +13,7 @@ from pathlib import Path
 from RobotNQL import RobotNQL
 from environment import Environment
 import pickle
+import time
 
 
 #device = "cuda"#torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -26,6 +27,7 @@ torch.manual_seed(torch.initial_seed())
 
 
 #device = "cuda"#torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 
 def train(episode,cfg):	
@@ -69,10 +71,16 @@ def train(episode,cfg):
 	torch.save(depth_target_net,save_depth_target_net) 
 
 def datavalidation(episode,cfg):
+
+	hspos = 0
+	hsneg = 0
+	wave = 0
+	wait = 0
+	look = 0
 	t_steps=cfg.t_steps
-	dirname_rgb='dataset/RGB/'+str(episode)
-	dirname_dep='dataset/Depth/'+str(episode)
-	dirname_model='results/'+str(episode)
+	dirname_rgb='dataset/RGB/ep'+str(episode)
+	dirname_dep='dataset/Depth/ep'+str(episode)
+	dirname_model='validation/'+str(episode)
 	agent = RobotNQL(epi=episode,cfg=cfg,validation=True)
 	env = Environment()
 
@@ -109,23 +117,22 @@ def datavalidation(episode,cfg):
 	ep_rewards=torch.load(file_ep_rewards)
 
 	aset = cfg.actions
-	testing = False
+	testing = True
 	init_step = 0
 	
+	'''
 	if(len(reward_history)!=episode):
 		if((len(recent_rewards)>0) and (len(recent_rewards)<=t_steps+1)):
 			init_step = len(recent_rewards)
 		
 	'''
-	if testing:
-		#aset = {'1','1','1','1'}
-		aset = ['4','4','4','4']
-		init_step = 0
-	'''
 
+	
 	aux_total_rewards = 0
+	'''
 	for i in range(init_step):
 		aux_total_rewards = aux_total_rewards+recent_rewards[i]
+	'''
 
 	actions = []
 	rewards = []
@@ -152,7 +159,7 @@ def datavalidation(episode,cfg):
 	while step <=t_steps+1:
 		print("Step=",step)
 		action_index=0
-		numSteps=(episode-1)*t_steps+step
+		numSteps=0
 		action_index = agent.perceive(screen,depth, terminal, False, numSteps,step,testing)		
 		step=step+1		
 		if action_index == None:
@@ -177,16 +184,42 @@ def datavalidation(episode,cfg):
 		rewards.append(reward)
 		actions.append(action_index)
 		total_reward=total_reward+reward
+
+	
+
+		if action_index == 3 :
+			if reward>0 :
+				hspos = hspos+1
+			elif reward==-0.1 : 
+				hsneg = hsneg+1
+			
+		elif action_index == 0 :
+			wait = wait+1
+		elif action_index == 1 :
+			look = look+1
+		elif action_index == 2 :
+			wave = wave+1
+		
+	
+	
+		print('###################')	
+		print('Wait\t',wait)
+		print('Look\t',look)
+		print('Wave\t',wave)
+		print('HS Suc.\t',hspos)
+		print('HS Fail\t',hsneg)
+
+		print('================>')
 		print("Total Reward: ",total_reward)
 		print('================>')
-		torch.save(rewards,recent_rewards)
-		torch.save(actions,recent_actions)
+		torch.save(rewards,file_recent_rewards)
+		torch.save(actions,file_recent_actions)
 
 		
 	reward_history.append(rewards)
 	action_history.append(actions)
 	ep_rewards.append(total_reward)
-	print('+++++++++++++++++++++++++++++++++')
+	print('\n')
 	
 	 
 	torch.save(ep_rewards,file_ep_rewards)
@@ -204,19 +237,22 @@ def datavalidation(episode,cfg):
 	env.close_connection()
 
 
+
 def main():
 	ep_validation = "validation"
 	n_validation = 0
-	while(path.isdir(ep_validation+str(n_validation))):
+	
+	while(path.isdir('validation/'+ep_validation+str(n_validation))):
 		n_validation+=1 
+		print(n_validation)
 	
 	name_ep=ep_validation+str(n_validation)
 	Path('validation/'+name_ep).mkdir(parents=True, exist_ok=True)
 
 
-
-
+	
 	train(name_ep,vcfg)
+
 
 	env=Environment()
 

@@ -1,5 +1,5 @@
 #datageneration
-t_steps = 2000
+t_steps = 100
 #environment
 raw_frame_height = 320
 raw_frame_width = 240
@@ -19,11 +19,11 @@ ep_end	 = 0.1
 ep_endt	= 28000
 learn_start= 0
 #training
-cycles = 50
-trains = 5
+cycles = 1
+trains = 1
 #trainNQL
 device = "cpu"#cuda
-t_eps = 30
+t_eps = 60
 minibatch_size = 50
 discount       = 0.99 #Discount factor.
 replay_memory  = 12000
