@@ -19,8 +19,8 @@ ep_end	 = 0.1
 ep_endt	= 28000
 learn_start= 0
 #training
-cycles = 2000
-trains = 20
+cycles = 100
+trains = 10
 #trainNQL
 device = "cpu"#cuda
 t_eps = 60

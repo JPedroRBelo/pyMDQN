@@ -23,7 +23,7 @@ cycles = 100
 trains = 10
 #trainNQL
 device = "cpu"#cuda
-t_eps = 30
+t_eps = 60
 minibatch_size = 50
 discount       = 0.99 #Discount factor.
 replay_memory  = 12000
@@ -34,4 +34,13 @@ target_q       = 4
 neutral_reward = 0
 hs_success_reward = 1
 hs_fail_reward = -0.1
+
+
+#network
+noutputs=4
+nfeats=8
+nstates=[16,32,64,256]
+kernels = [4,2]
+strides = [3,1]
+poolsize=2
 

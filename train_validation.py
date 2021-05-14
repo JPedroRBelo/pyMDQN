@@ -7,13 +7,13 @@ import copy
 from TrainNQL import TrainNQL
 import os.path
 from os import path
-import validate_config as vcfg
 import torch.nn as nn
 from pathlib import Path
 from RobotNQL import RobotNQL
 from environment import Environment
 import pickle
 import time
+import shutil
 
 
 #device = "cuda"#torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -208,6 +208,8 @@ def datavalidation(episode,cfg):
 		print('Wave\t',wave)
 		print('HS Suc.\t',hspos)
 		print('HS Fail\t',hsneg)
+		if(hspos+hsneg):
+			print('Acuracy\t',((hspos)/(hspos+hsneg)))	
 
 		print('================>')
 		print("Total Reward: ",total_reward)
@@ -238,7 +240,7 @@ def datavalidation(episode,cfg):
 
 
 
-def main():
+def main(cfg):
 	ep_validation = "validation"
 	n_validation = 0
 	
@@ -249,9 +251,10 @@ def main():
 	name_ep=ep_validation+str(n_validation)
 	Path('validation/'+name_ep).mkdir(parents=True, exist_ok=True)
 
-
 	
-	train(name_ep,vcfg)
+	shutil.copy(cfg.__file__,'validation/'+name_ep+'/')
+	
+	train(name_ep,cfg)
 
 
 	env=Environment()
@@ -261,7 +264,7 @@ def main():
 	env.close_connection()
 	time.sleep(1)
 	#Execute data generation phase script
-	datavalidation(name_ep,vcfg)
+	datavalidation(name_ep,cfg)
 
 
 	env=Environment()
@@ -271,5 +274,7 @@ def main():
 	
 
 if __name__ == "__main__":
-   main()
+	import validate_config as vcfg
+	import config as cfg
+	main(vcfg)
 

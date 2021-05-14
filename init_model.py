@@ -2,9 +2,11 @@ import torch
 
 from network import DQN
 from pathlib import Path
+import config as cfg
 
-modelGray = DQN()
-modelDepth = DQN()
+
+modelGray = DQN(noutputs=cfg.noutputs,nfeats=cfg.nfeats,nstates=cfg.nstates,kernels=cfg.kernels,strides=cfg.strides,poolsize=cfg.poolsize)
+modelDepth = DQN(noutputs=cfg.noutputs,nfeats=cfg.nfeats,nstates=cfg.nstates,kernels=cfg.kernels,strides=cfg.strides,poolsize=cfg.poolsize)
 
 save_modelGray='results/ep0/modelGray.net'
 save_modelDepth='results/ep0/modelDepth.net'
