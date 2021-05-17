@@ -19,6 +19,7 @@ class Environment:
 		self.raw_frame_height= cfg.raw_frame_height
 		self.raw_frame_width= cfg.raw_frame_width
 		self.proc_frame_size= cfg.proc_frame_size
+		print(self.proc_frame_size)
 		self.state_size=cfg.state_size
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		port = cfg.port        

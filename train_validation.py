@@ -14,6 +14,7 @@ from environment import Environment
 import pickle
 import time
 import shutil
+import logging
 
 
 #device = "cuda"#torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -38,15 +39,14 @@ def train(episode,cfg):
 	
 	agent=TrainNQL(epi=episode,cfg=cfg,validation=True)
 
-	target_net=4
+	target_net=cfg.target_q
 	agent.load_data()
 	for j in range(cycles):
-		print("\nTrain= "+str(j+1)+"/"+str(cycles))
-		for i in range(trains):
-			print("epoch ",i+1)
-			agent.train()
-		agent.gray_target_net=copy.deepcopy(agent.gray_policy_net)
-		agent.depth_target_net=copy.deepcopy(agent.depth_policy_net)	
+		print("Train= "+str(j+1)+"/"+str(cycles))		
+		agent.train()
+		if(j%target_net==0):
+			agent.gray_target_net=copy.deepcopy(agent.gray_policy_net)
+			agent.depth_target_net=copy.deepcopy(agent.depth_policy_net)	
 
 
 	gray_policy_net=copy.deepcopy(agent.gray_policy_net)
@@ -72,6 +72,9 @@ def train(episode,cfg):
 
 def datavalidation(episode,cfg):
 
+
+
+
 	hspos = 0
 	hsneg = 0
 	wave = 0
@@ -82,13 +85,13 @@ def datavalidation(episode,cfg):
 	dirname_dep='dataset/Depth/ep'+str(episode)
 	dirname_model='validation/'+str(episode)
 	agent = RobotNQL(epi=episode,cfg=cfg,validation=True)
-	env = Environment()
+	env = Environment(cfg)
 
 	Path(dirname_rgb).mkdir(parents=True, exist_ok=True)
 	Path(dirname_dep).mkdir(parents=True, exist_ok=True)
 	Path(dirname_model).mkdir(parents=True, exist_ok=True)
 
-	env = Environment()
+	env = Environment(cfg)
 
 	file_recent_rewards = 'validation/'+str(episode)+'/recent_rewards.dat'
 	file_recent_actions='validation/'+str(episode)+'/recent_actions.dat'
@@ -110,14 +113,27 @@ def datavalidation(episode,cfg):
 
 
 
+
 	recent_rewards=torch.load(file_recent_rewards)
 	recent_actions=torch.load(file_recent_actions)
 	reward_history=torch.load(file_reward_history)
 	action_history=torch.load(file_action_history)
 	ep_rewards=torch.load(file_ep_rewards)
 
+	logger = logging.getLogger()
+	logger.setLevel(logging.INFO) # process everything, even if everything isn't printed
+
+	ch = logging.StreamHandler()
+	ch.setLevel(logging.INFO) # or any other level
+	logger.addHandler(ch)
+
+
+	fh = logging.FileHandler('validation/'+str(episode)+'/results.log')
+	fh.setLevel(logging.INFO) # or any level you want
+	logger.addHandler(fh)
+
 	aset = cfg.actions
-	testing = True
+	testing = -1
 	init_step = 0
 	
 	'''
@@ -147,7 +163,7 @@ def datavalidation(episode,cfg):
 	env.send_data_to_pepper("step"+str(init_step))
 	env.send_data_to_pepper("episode"+str(episode))
 	env.close_connection()
-	env = Environment()
+	env = Environment(cfg)
 
 	reward = 0 #temp
 	terminal = 0
@@ -199,21 +215,25 @@ def datavalidation(episode,cfg):
 			look = look+1
 		elif action_index == 2 :
 			wave = wave+1
+
+		
+
 		
 	
 	
-		print('###################')	
-		print('Wait\t',wait)
-		print('Look\t',look)
-		print('Wave\t',wave)
-		print('HS Suc.\t',hspos)
-		print('HS Fail\t',hsneg)
+		logger.info('###################')	
+		logger.info("STEP:\t"+str(step))
+		logger.info('Wait\t'+str(wait))
+		logger.info('Look\t'+str(look))
+		logger.info('Wave\t'+str(wave))
+		logger.info('HS Suc.\t'+str(hspos))
+		logger.info('HS Fail\t'+str(hsneg))
 		if(hspos+hsneg):
-			print('Acuracy\t',((hspos)/(hspos+hsneg)))	
+			logger.info('Acuracy\t'+str(((hspos)/(hspos+hsneg))))
 
-		print('================>')
-		print("Total Reward: ",total_reward)
-		print('================>')
+		logger.info('================>')
+		logger.info("Total Reward: "+str(total_reward))
+		logger.info('================>')
 		torch.save(rewards,file_recent_rewards)
 		torch.save(actions,file_recent_actions)
 
@@ -241,23 +261,36 @@ def datavalidation(episode,cfg):
 
 
 def main(cfg):
+
+
+
 	ep_validation = "validation"
 	n_validation = 0
 	
 	while(path.isdir('validation/'+ep_validation+str(n_validation))):
 		n_validation+=1 
-		print(n_validation)
+	
 	
 	name_ep=ep_validation+str(n_validation)
+	print(name_ep)
 	Path('validation/'+name_ep).mkdir(parents=True, exist_ok=True)
 
 	
 	shutil.copy(cfg.__file__,'validation/'+name_ep+'/')
+	#shutil.copy('validation/'+ep_validation+str(n_validation-1)+'/modelDepth.net','validation/'+name_ep+'/')
+	#shutil.copy('validation/'+ep_validation+str(n_validation-1)+'/tModelDepth.net','validation/'+name_ep+'/')
+	#shutil.copy('validation/'+ep_validation+str(n_validation-1)+'/modelGray.net','validation/'+name_ep+'/')
+	#shutil.copy('validation/'+ep_validation+str(n_validation-1)+'/tModelGray.net','validation/'+name_ep+'/')
+	#shutil.copy('results/ep60/modelDepth.net','validation/'+name_ep+'/')
+	#shutil.copy('results/ep60/tModelDepth.net','validation/'+name_ep+'/')
+	#shutil.copy('results/ep60/modelGray.net','validation/'+name_ep+'/')
+	#shutil.copy('results/ep60/tModelGray.net','validation/'+name_ep+'/')
 	
 	train(name_ep,cfg)
+	
 
-
-	env=Environment()
+	#name_ep=ep_validation+str(n_validation-1)
+	env=Environment(cfg)
 
 	env.send_data_to_pepper("start")
 	time.sleep(1)
@@ -267,14 +300,25 @@ def main(cfg):
 	datavalidation(name_ep,cfg)
 
 
-	env=Environment()
+	env=Environment(cfg)
 	env.send_data_to_pepper("stop")
-
 	
 	
 
 if __name__ == "__main__":
-	import validate_config as vcfg
-	import config as cfg
+	'''
+	import validate_config6 as vcfg
 	main(vcfg)
+	import validate_config7 as vcfg
+	main(vcfg)
+	import validate_config8 as vcfg
+	main(vcfg)
+	import validate_config9 as vcfg
+	main(vcfg)
+	'''
+	import configs.validate_config10 as vcfg
+	main(vcfg)
+	import configs.validate_config11 as vcfg
+	main(vcfg)
+
 
