@@ -204,6 +204,8 @@ class TrainNQL:
 		for i in range(0,len(self.memory),self.minibatch_size):
 			#transitions = self.memory.sample(self.minibatch_size)
 			transitions = self.memory.pull(self.minibatch_size)
+
+			print('Batch train: '+str(int(i/self.minibatch_size)+1)+"/"+str(int(len(self.memory)/self.minibatch_size)))
 			
 			aux_transitions = []
 			for t in transitions:

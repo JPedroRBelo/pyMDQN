@@ -19,15 +19,15 @@ ep_end	 = 0.1
 ep_endt	= 28000
 learn_start= 0
 #training
-cycles = 30000
+cycles = 1
 trains = 10
 #trainNQL
 device = "cpu"#cuda
-t_eps = 60
-minibatch_size = 2000
-discount       = 0.99 #Discount factor.
-replay_memory  = 120000
+t_eps = 30
+minibatch_size = 25
 bufferSize     =  2000
+discount       = 0.99 #Discount factor.
+replay_memory  = t_eps*bufferSize
 target_q       = 4
 
 #rewards

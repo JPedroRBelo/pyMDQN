@@ -316,7 +316,11 @@ if __name__ == "__main__":
 	import validate_config9 as vcfg
 	main(vcfg)
 	'''
-	import configs.validate_config13 as vcfg
+	import configs.validate_config17 as vcfg
+	main(vcfg)
+	import configs.validate_config18 as vcfg
+	main(vcfg)
+	import configs.validate_config15 as vcfg
 	main(vcfg)
 	import configs.validate_config14 as vcfg
 	main(vcfg)
