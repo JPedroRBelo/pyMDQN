@@ -27,6 +27,14 @@ def generate_data(episode,agent,env):
 	action_history=torch.load('files/action_history.dat')
 	ep_rewards=torch.load('files/ep_rewards.dat')
 
+
+	hspos = 0
+	hsneg = 0
+	wave = 0
+	wait = 0
+	look = 0
+
+
 	aset = cfg.actions
 	testing = False
 	init_step = 0
@@ -58,7 +66,8 @@ def generate_data(episode,agent,env):
 	print(init_step)
 
 	env.send_data_to_pepper("step"+str(init_step))
-	env.send_data_to_pepper("speed"+str(simulation_speed))
+	env.send_data_to_pepper("episode"+str(episode))
+	env.send_data_to_pepper("speed"+str(cfg.simulation_speed))
 	env.close_connection()
 	env = Environment()
 
@@ -97,6 +106,35 @@ def generate_data(episode,agent,env):
 		rewards.append(reward)
 		actions.append(action_index)
 		total_reward=total_reward+reward
+
+		if action_index == 3 :
+			if reward>0 :
+				hspos = hspos+1
+			elif reward==-0.1 : 
+				hsneg = hsneg+1
+			
+		elif action_index == 0 :
+			wait = wait+1
+		elif action_index == 1 :
+			look = look+1
+		elif action_index == 2 :
+			wave = wave+1		
+	
+	
+		print('###################')	
+		print("STEP:\t"+str(step))
+		print('Wait\t'+str(wait))
+		print('Look\t'+str(look))
+		print('Wave\t'+str(wave))
+		print('HS Suc.\t'+str(hspos))
+		print('HS Fail\t'+str(hsneg))
+		if(hspos+hsneg):
+			print('Acuracy\t'+str(((hspos)/(hspos+hsneg))))
+
+		print('================>')
+		print("Total Reward: "+str(total_reward))
+		print('================>')
+
 		print("Total Reward: ",total_reward)
 		print('================>')
 		torch.save(rewards,'recent_rewards.dat',)
