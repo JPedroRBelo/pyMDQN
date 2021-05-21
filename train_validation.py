@@ -86,6 +86,7 @@ def datavalidation(episode,cfg):
 	dirname_model='validation/'+str(episode)
 	agent = RobotNQL(epi=episode,cfg=cfg,validation=True)
 	env = Environment(cfg)
+	simulation_speed = cfg.simulation_speed
 
 	Path(dirname_rgb).mkdir(parents=True, exist_ok=True)
 	Path(dirname_dep).mkdir(parents=True, exist_ok=True)
@@ -162,6 +163,7 @@ def datavalidation(episode,cfg):
 
 	env.send_data_to_pepper("step"+str(init_step))
 	env.send_data_to_pepper("episode"+str(episode))
+	env.send_data_to_pepper("speed"+str(simulation_speed))
 	env.close_connection()
 	env = Environment(cfg)
 
@@ -316,7 +318,7 @@ if __name__ == "__main__":
 	import validate_config9 as vcfg
 	main(vcfg)
 	'''
-	import configs.validate_config17 as vcfg
+	import configs.validate_config19 as vcfg
 	main(vcfg)
 	import configs.validate_config18 as vcfg
 	main(vcfg)

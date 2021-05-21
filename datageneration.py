@@ -30,6 +30,7 @@ def generate_data(episode,agent,env):
 	aset = cfg.actions
 	testing = False
 	init_step = 0
+	simulation_speed = cfg.simulation_speed
 	
 	if(len(reward_history)!=episode):
 		if((len(recent_rewards)>0) and (len(recent_rewards)<=t_steps+1)):
@@ -57,6 +58,7 @@ def generate_data(episode,agent,env):
 	print(init_step)
 
 	env.send_data_to_pepper("step"+str(init_step))
+	env.send_data_to_pepper("speed"+str(simulation_speed))
 	env.close_connection()
 	env = Environment()
 
