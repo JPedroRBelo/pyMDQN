@@ -20,7 +20,7 @@ torch.manual_seed(torch.initial_seed())
 
 
 def generate_data(episode,agent,env):
-	env = Environment()
+	env = Environment(epi=episode)
 	recent_rewards=torch.load('recent_rewards.dat')
 	recent_actions=torch.load('recent_actions.dat')
 	reward_history=torch.load('files/reward_history.dat')
@@ -69,7 +69,7 @@ def generate_data(episode,agent,env):
 	env.send_data_to_pepper("episode"+str(episode))
 	env.send_data_to_pepper("speed"+str(cfg.simulation_speed))
 	env.close_connection()
-	env = Environment()
+	env = Environment(epi=episode)
 
 	reward = 0 #temp
 	terminal = 0
@@ -131,10 +131,6 @@ def generate_data(episode,agent,env):
 		if(hspos+hsneg):
 			print('Acuracy\t'+str(((hspos)/(hspos+hsneg))))
 
-		print('================>')
-		print("Total Reward: "+str(total_reward))
-		print('================>')
-
 		print("Total Reward: ",total_reward)
 		print('================>')
 		torch.save(rewards,'recent_rewards.dat',)
@@ -165,7 +161,7 @@ def main():
 	episode = int(episode)
 
 	agent = RobotNQL(epi=episode)
-	env = Environment()
+	env = Environment(epi=episode)
 
 	Path(dirname_rgb).mkdir(parents=True, exist_ok=True)
 	Path(dirname_dep).mkdir(parents=True, exist_ok=True)

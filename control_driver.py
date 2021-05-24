@@ -17,6 +17,7 @@ def generate_data(episode,agent,env):
 	aset = ['1','2','3','4']
 
 	env.send_data_to_pepper("step"+str(0))
+	env.send_data_to_pepper("episodeControlDriver")
 	env.close_connection()
 	env = Environment()
 

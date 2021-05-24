@@ -12,10 +12,11 @@ import config as dcfg #default config
 
 
 class Environment:
-	def __init__(self,cfg=dcfg):
+	def __init__(self,cfg=dcfg,epi=0):
 		# if gpu is to be used
 		#self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 		#self.r_len=8
+		self.episode=epi
 		self.raw_frame_height= cfg.raw_frame_height
 		self.raw_frame_width= cfg.raw_frame_width
 		self.proc_frame_size= cfg.proc_frame_size
@@ -52,9 +53,9 @@ class Environment:
 		print('Preprocessing images')
 		proc_image=torch.FloatTensor(self.state_size,self.proc_frame_size,self.proc_frame_size)
 		proc_depth=torch.FloatTensor(self.state_size,self.proc_frame_size,self.proc_frame_size)
-		episode=torch.load('files/episode.dat')
-		dirname_rgb='dataset/RGB/ep'+str(episode)
-		dirname_dep='dataset/Depth/ep'+str(episode)
+		
+		dirname_rgb='dataset/RGB/ep'+str(self.episode)
+		dirname_dep='dataset/Depth/ep'+str(self.episode)
 		for i in range(self.state_size):
 
 			grayfile=dirname_rgb+'/image_'+str(step)+'_'+str(i+1)+'.png'

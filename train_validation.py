@@ -15,6 +15,7 @@ import pickle
 import time
 import shutil
 import logging
+import sys
 
 
 #device = "cuda"#torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -85,14 +86,14 @@ def datavalidation(episode,cfg):
 	dirname_dep='dataset/Depth/ep'+str(episode)
 	dirname_model='validation/'+str(episode)
 	agent = RobotNQL(epi=episode,cfg=cfg,validation=True)
-	env = Environment(cfg)
+	env = Environment(cfg,epi=episode)
 	simulation_speed = cfg.simulation_speed
 
 	Path(dirname_rgb).mkdir(parents=True, exist_ok=True)
 	Path(dirname_dep).mkdir(parents=True, exist_ok=True)
 	Path(dirname_model).mkdir(parents=True, exist_ok=True)
 
-	env = Environment(cfg)
+	env = Environment(cfg,epi=episode)
 
 	file_recent_rewards = 'validation/'+str(episode)+'/recent_rewards.dat'
 	file_recent_actions='validation/'+str(episode)+'/recent_actions.dat'
@@ -165,7 +166,7 @@ def datavalidation(episode,cfg):
 	env.send_data_to_pepper("episode"+str(episode))
 	env.send_data_to_pepper("speed"+str(simulation_speed))
 	env.close_connection()
-	env = Environment(cfg)
+	env = Environment(cfg,epi=episode)
 
 	reward = 0 #temp
 	terminal = 0
@@ -262,7 +263,7 @@ def datavalidation(episode,cfg):
 
 
 
-def main(cfg):
+def main(cfg,param = 'default'):
 
 
 
@@ -288,22 +289,40 @@ def main(cfg):
 	#shutil.copy('results/ep60/modelGray.net','validation/'+name_ep+'/')
 	#shutil.copy('results/ep60/tModelGray.net','validation/'+name_ep+'/')
 	
-	train(name_ep,cfg)
+	if((param == 'default') or (param == 'train')):
+		train(name_ep,cfg)
 	
 
-	#name_ep=ep_validation+str(n_validation-1)
-	env=Environment(cfg)
+	if((param == 'default') or (param == 'test')):
+		#name_ep=ep_validation+str(n_validation-1)
 
-	env.send_data_to_pepper("start")
-	time.sleep(1)
-	env.close_connection()
-	time.sleep(1)
-	#Execute data generation phase script
-	datavalidation(name_ep,cfg)
+		if(param == 'test'):
+			episodeLoad=torch.load('files/episode.dat')
+			episodeLoad = str(int(episodeLoad)-1)
+			if(len(sys.argv)>2):
+				episodeLoad = str(sys.argv[2])
+			shutil.copy('results/ep'+episodeLoad+'/modelDepth.net','validation/'+name_ep+'/')
+			shutil.copy('results/ep'+episodeLoad+'/tModelDepth.net','validation/'+name_ep+'/')
+			shutil.copy('results/ep'+episodeLoad+'/modelGray.net','validation/'+name_ep+'/')
+			shutil.copy('results/ep'+episodeLoad+'/tModelGray.net','validation/'+name_ep+'/')
+
+						
 
 
-	env=Environment(cfg)
-	env.send_data_to_pepper("stop")
+
+
+		env=Environment(cfg,epi=name_ep)
+
+		env.send_data_to_pepper("start")
+		time.sleep(1)
+		env.close_connection()
+		time.sleep(1)
+		#Execute data generation phase script
+		datavalidation(name_ep,cfg)
+
+
+		env=Environment(cfg,epi=name_ep)
+		env.send_data_to_pepper("stop")
 	
 	
 
@@ -318,13 +337,14 @@ if __name__ == "__main__":
 	import validate_config9 as vcfg
 	main(vcfg)
 	'''
-	import configs.validate_config19 as vcfg
-	main(vcfg)
-	import configs.validate_config18 as vcfg
-	main(vcfg)
-	import configs.validate_config15 as vcfg
-	main(vcfg)
-	import configs.validate_config14 as vcfg
-	main(vcfg)
+	param = 'default'
+	if(len(sys.argv)>1):
+		if(sys.argv[1]=='test' or  sys.argv[1]=='Test'):
+			param = 'test'
+		elif(sys.argv[1]=='train' or  sys.argv[1]=='Train'):
+			param = 'train'
+				
+	import config as cfg
+	main(cfg,param)
 
 
