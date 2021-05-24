@@ -9,7 +9,7 @@ from pynput import keyboard
 
 
 
-def generate_data(episode,agent,env):
+def generate_data(episode,env):
 	env = Environment()
 	t_steps = 2000
 	total_reward = 0
@@ -17,9 +17,10 @@ def generate_data(episode,agent,env):
 	aset = ['1','2','3','4']
 
 	env.send_data_to_pepper("step"+str(0))
-	env.send_data_to_pepper("episodeControlDriver")
+	env.send_data_to_pepper("episode"+str(episode))
 	env.close_connection()
-	env = Environment()
+	env = Environment(epi=episode)
+
 
 	reward = 0 #temp
 	terminal = 0
@@ -32,7 +33,7 @@ def generate_data(episode,agent,env):
 	while step <=t_steps+1:
 		print("Step=",step)
 		action_index=0
-		numSteps=(episode-1)*t_steps+step
+		
 		
 		print("1 :Wait\n2 :Look\n3: Wave\n4: Handshake\n")
 		with keyboard.Events() as events:
@@ -80,20 +81,20 @@ def generate_data(episode,agent,env):
 
 def main():
 	#tracker = SummaryTracker()
-	episode=torch.load('files/episode.dat')
+	episode="ControlDriver"
 	dirname_rgb='dataset/RGB/ep'+str(episode)
 	dirname_dep='dataset/Depth/ep'+str(episode)
 	dirname_model='results/ep'+str(episode)
-	episode = int(episode)
 
-	agent = RobotNQL(epi=episode)
+
+	
 	env = Environment()
 
 	Path(dirname_rgb).mkdir(parents=True, exist_ok=True)
 	Path(dirname_dep).mkdir(parents=True, exist_ok=True)
 	Path(dirname_model).mkdir(parents=True, exist_ok=True)
 
-	generate_data(episode,agent,env)
+	generate_data(episode,env)
 	env.close_connection()
 
 if __name__ == "__main__":
