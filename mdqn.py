@@ -10,7 +10,7 @@ import sys
 import subprocess
 from subprocess import Popen
 from os.path import abspath, dirname, join
-import configs.validate_config as cfg
+import config as cfg
 
 
 def getValue(filename):

@@ -113,6 +113,7 @@ def main():
 	dirname_dep='dataset/Depth/ep'+str(episode)
 	dirname_model='results/ep'+str(episode)
 	episode = int(episode)
+	print('Validation files in ep'+str(episode)+' folder')
 
 	agent = RobotNQL(epi=episode)
 	env = Environment()

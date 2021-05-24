@@ -30,7 +30,7 @@ class ReplayMemory(object):
 		    self.memory.append(None)
 		    self.aux_memory.append(None)
 		self.memory[self.position] = Transition(*args)
-		self.aux_memory = self.memory.copy()
+		self.aux_memory[self.position] = Transition(*args)
 		self.position = (self.position + 1) % self.capacity
 
 	def sample(self, batch_size):
@@ -205,7 +205,7 @@ class TrainNQL:
 			#transitions = self.memory.sample(self.minibatch_size)
 			transitions = self.memory.pull(self.minibatch_size)
 
-			print('Batch train: '+str(int(i/self.minibatch_size)+1)+"/"+str(int(len(self.memory)/self.minibatch_size)))
+			print('Batch train: '+str(int(i/self.minibatch_size)+1)+"/"+str(int(len(self.memory)/self.minibatch_size)+1))
 			
 			aux_transitions = []
 			for t in transitions:
