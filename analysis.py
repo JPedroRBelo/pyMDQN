@@ -1,6 +1,9 @@
 import torch
 import numpy as np
 import pickle
+import matplotlib.pyplot as plt
+
+
 
 
 folder = 'files'
@@ -9,6 +12,8 @@ folder = 'files'
 
 t_steps=2000
 datContent = []
+
+
 
 rewards_file = folder+'/reward_history.dat'
 
@@ -57,6 +62,11 @@ print(datContent)
 '''
 #results = {{}}
 
+v_hspos = []
+v_hsneg = []
+v_wave  = []
+v_wait  = []
+v_look  = []
 
 for i in range(len(actions)):
 	hspos = 0
@@ -90,6 +100,26 @@ for i in range(len(actions)):
 	print('HS Suc.\t',hspos)
 	print('HS Fail\t',hsneg)
 	print('Acuracy\t',((hspos)/(hspos+hsneg)))	
+	v_wait.append(wait)
+	v_look.append(look)
+	v_wave.append(wave)
+	v_hspos.append(hspos)
+	v_hsneg.append(hsneg)
+
+
+plt.plot(v_hspos,label='HS Success')
+plt.plot(v_hsneg,label='HS Fail')
+plt.plot(np.add(v_hspos, v_hsneg),label='HS Total')
+plt.plot(v_wait,label='Wait')
+plt.plot(v_look,label='Look')
+plt.plot(v_wave,label='Wave')
+
+plt.ylabel('Number of Actions')
+plt.xlabel('Epoch')
+
+plt.ylim([0, 2000])
+plt.legend()
+plt.show()
 
 
 
