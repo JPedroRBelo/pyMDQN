@@ -2,7 +2,8 @@ import torch
 import numpy as np
 import pickle
 import matplotlib.pyplot as plt
-
+import config as cfg
+import sys
 
 
 
@@ -10,7 +11,7 @@ folder = 'files'
 
 
 
-t_steps=2000
+t_steps=cfg.t_steps
 datContent = []
 
 
@@ -33,7 +34,7 @@ filename = rewards_file
 
 rewards=torch.load(folder+'/reward_history.dat')#.detach().cpu().numpy()
 actions=torch.load(folder+'/action_history.dat')#.detach().cpu().numpy()
-print(actions)
+
 
 '''
 objects = []
@@ -76,19 +77,19 @@ for i in range(len(actions)):
 	look = 0
 
 	for step in range(t_steps):		
-
-		if actions[i][step] == 3 :
-			if rewards[i][step]>0 :
-				hspos = hspos+1
-			elif rewards[i][step]==-0.1 : 
-				hsneg = hsneg+1
-		
-		elif actions[i][step] == 0 :
-			wait = wait+1
-		elif actions[i][step] == 1 :
-			look = look+1
-		elif actions[i][step] == 2 :
-			wave = wave+1
+		if(len(actions[i])>0 ):
+			if actions[i][step] == 3 :
+				if rewards[i][step]>0 :
+					hspos = hspos+1
+				elif rewards[i][step]==-0.1 : 
+					hsneg = hsneg+1
+			
+			elif actions[i][step] == 0 :
+				wait = wait+1
+			elif actions[i][step] == 1 :
+				look = look+1
+			elif actions[i][step] == 2 :
+				wave = wave+1
 		
 	
 	
@@ -106,18 +107,24 @@ for i in range(len(actions)):
 	v_hspos.append(hspos)
 	v_hsneg.append(hsneg)
 
+arg = 'all'
+if len(sys.argv) > 1:
+	arg = sys.argv[1]
 
-plt.plot(v_hspos,label='HS Success')
-plt.plot(v_hsneg,label='HS Fail')
-plt.plot(np.add(v_hspos, v_hsneg),label='HS Total')
-plt.plot(v_wait,label='Wait')
-plt.plot(v_look,label='Look')
-plt.plot(v_wave,label='Wave')
+if (arg == 'hs') or (arg == 'all'):
+	plt.plot(v_hspos,label='HS Success')
+	plt.plot(v_hsneg,label='HS Fail')
+	
+if (arg == 'other') or (arg == 'all'):
+	plt.plot(np.add(v_hspos, v_hsneg),label='HS Total')
+	plt.plot(v_wait,label='Wait')
+	plt.plot(v_look,label='Look')
+	plt.plot(v_wave,label='Wave')
 
 plt.ylabel('Number of Actions')
 plt.xlabel('Epoch')
 
-plt.ylim([0, 2000])
+plt.ylim([0, t_steps])
 plt.legend()
 plt.show()
 

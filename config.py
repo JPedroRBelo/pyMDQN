@@ -1,6 +1,6 @@
 #datageneration
-simulation_speed = 3
-t_steps = 2000
+simulation_speed = 5
+t_steps = 250
 #environment
 raw_frame_height = 320
 raw_frame_width = 240
@@ -11,24 +11,25 @@ port = 12375
 #host='10.62.6.208'
 host='127.0.0.1'
 #mdqn
-t_episodes=30
+t_episodes=100
 #NQL
 actions	= ['1','2','3','4']
 #epsilon annealing
 ep_start   = 1.0
 ep_end	 = 0.1
-ep_endt	= 28000
+ep_endt_number = 50
+ep_endt	= ep_endt_number * t_steps
 learn_start= 0
 #training
-cycles = 10
+cycles = 30
 trains = 10
 #trainNQL
-device = "cuda"#cuda
-t_eps = 30
-minibatch_size = 25
+device = "cpu"#cuda
+t_eps = 100
+minibatch_size = 20
 discount       = 0.99 #Discount factor.
-replay_memory  = 120000
-bufferSize     =  2000
+replay_memory  = 3000
+bufferSize     =  t_steps
 target_q       = 4
 
 #rewards

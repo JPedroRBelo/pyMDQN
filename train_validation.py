@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+import signal
 import torch
 import torchvision.transforms as T
 import numpy as np
@@ -16,19 +18,33 @@ import time
 import shutil
 import logging
 import sys
+import subprocess
+from subprocess import Popen
+from os.path import abspath, dirname, join
 
 
-#device = "cuda"#torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 
 
-#device = "cpu"#torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-torch.manual_seed(torch.initial_seed())  
 
 
-#device = "cuda"#torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+def openSim(process,command):
+	process.terminate()
+	time.sleep(5)
+	process = Popen(command)
+	time.sleep(5)
+	return process
+
+def killSim(process):
+	process.terminate()		
+	time.sleep(10)
+
+def signalHandler(sig, frame):
+    process.terminate()
+    sys.exit(0)
+
 
 
 
@@ -265,7 +281,10 @@ def datavalidation(episode,cfg):
 
 def main(cfg,param = 'default'):
 
-
+	torch.manual_seed(torch.initial_seed())  
+	global process
+	process = Popen('false') # something long running
+	signal.signal(signal.SIGINT, signalHandler)
 
 	ep_validation = "validation"
 	n_validation = 0
@@ -307,10 +326,12 @@ def main(cfg,param = 'default'):
 			shutil.copy('results/ep'+episodeLoad+'/tModelGray.net','validation/'+name_ep+'/')
 
 						
+		command = './simDRLSR.x86_64'
+		directory = '../../Simulator0.252/'
+		command = abspath(join(directory,command))
 
 
-
-
+		process = openSim(process,command)
 		env=Environment(cfg,epi=name_ep)
 
 		env.send_data_to_pepper("start")
@@ -323,6 +344,8 @@ def main(cfg,param = 'default'):
 
 		env=Environment(cfg,epi=name_ep)
 		env.send_data_to_pepper("stop")
+		killSim(process)
+	killSim(process)
 	
 	
 
@@ -337,6 +360,9 @@ if __name__ == "__main__":
 	import validate_config9 as vcfg
 	main(vcfg)
 	'''
+
+	
+
 	param = 'default'
 	if(len(sys.argv)>1):
 		if(sys.argv[1]=='test' or  sys.argv[1]=='Test'):
@@ -344,7 +370,27 @@ if __name__ == "__main__":
 		elif(sys.argv[1]=='train' or  sys.argv[1]=='Train'):
 			param = 'train'
 				
-	import config as cfg
+	
+
+	import configs.validate_config23 as cfg
 	main(cfg,param)
 
+	import configs.validate_config24 as cfg
+	main(cfg,param)
+
+	import configs.validate_config25 as cfg
+	main(cfg,param)
+
+
+	import configs.validate_config26 as cfg
+	main(cfg,param)
+
+
+	import vconfigs.alidate_config27 as cfg
+	main(cfg,param)
+
+
+
+	import configs.validate_config28 as cfg
+	main(cfg,param)
 
