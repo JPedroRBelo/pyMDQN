@@ -1,5 +1,7 @@
 dataset/RGB/ep*
 dataset/Depth/ep*
+datasetbkup/RGB/ep*
+datasetbkup/Depth/ep*
 #simMDQN/dataset/*
 dataset.*
 test.csv
