@@ -107,6 +107,7 @@ def generate_data(episode,agent,env):
 		else:
 			reward = cfg.neutral_reward
 
+
 		rewards.append(reward)
 		actions.append(action_index)
 		total_reward=total_reward+reward
