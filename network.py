@@ -2,44 +2,54 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+'''
 noutputs=4
 nfeats=8
 nstates=[16,32,64,256]
 #kernel={9,5}
-kernel1 = 4
-kernel2 = 2
+#kernel1 = 4
+#kernel2 = 2
+kernel1 = 9
+kernel2 = 5
 stride1 = 3
 stride2 = 1
 poolsize=2
+'''
 
 
 
 class DQN(nn.Module):
-	def __init__(self):
+	def __init__(self,noutputs,nfeats,nstates,kernels,strides,poolsize):
 		super(DQN, self).__init__()
+		self.noutputs=noutputs
+		self.nfeats=nfeats
+		self.nstates=nstates
+		self.kernels=kernels
+		self.strides=strides
+		self.poolsize=poolsize
 		self.features = nn.Sequential(
-			nn.Conv2d(in_channels=nfeats,out_channels=nstates[0], kernel_size=kernel1,stride=stride1,padding=1),
+			nn.Conv2d(in_channels=self.nfeats,out_channels=self.nstates[0], kernel_size=self.kernels[0],stride=self.strides[0],padding=1),
 			nn.BatchNorm2d(nstates[0]),
 			nn.ReLU(),
-			nn.MaxPool2d(poolsize),
-			nn.Conv2d(in_channels=nstates[0],out_channels=nstates[1], kernel_size=kernel2,stride=stride2),
-			nn.BatchNorm2d(nstates[1]),
+			nn.MaxPool2d(self.poolsize),
+			nn.Conv2d(in_channels=self.nstates[0],out_channels=self.nstates[1], kernel_size=self.kernels[1],stride=self.strides[1]),
+			nn.BatchNorm2d(self.nstates[1]),
 			nn.ReLU(),
-			nn.MaxPool2d(poolsize),
-			nn.Conv2d(in_channels=nstates[1],out_channels=nstates[2], kernel_size=kernel2,stride=stride2),
-			nn.BatchNorm2d(nstates[2]),
+			nn.MaxPool2d(self.poolsize),
+			nn.Conv2d(in_channels=self.nstates[1],out_channels=self.nstates[2], kernel_size=self.kernels[1],stride=self.strides[1]),
+			nn.BatchNorm2d(self.nstates[2]),
 			nn.ReLU(),
-			nn.MaxPool2d(poolsize),	
+			nn.MaxPool2d(self.poolsize),	
 			)
 		self.classifier = nn.Sequential(
-			nn.Linear(nstates[2]*kernel2*kernel2,nstates[3]),
+			nn.Linear(self.nstates[2]*self.kernels[1]*self.kernels[1],self.nstates[3]),
 			nn.ReLU(),
-			nn.Linear(nstates[3], noutputs),
+			nn.Linear(self.nstates[3], self.noutputs),
 		)
 
 	def forward(self, x):
 		x = self.features(x)
-		x = x.view(x.size(0),nstates[2]*kernel2*kernel2)
+		x = x.view(x.size(0),self.nstates[2]*self.kernels[1]*self.kernels[1])
 		x = self.classifier(x)
 		return x
 

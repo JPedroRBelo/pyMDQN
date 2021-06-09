@@ -16,7 +16,7 @@ torch.manual_seed(torch.initial_seed())
 
 
 def generate_data(episode,agent,env):
-	env = Environment()
+	env = Environment(epi=episode)
 	recent_rewards=torch.load('recent_rewards.dat')
 	recent_actions=torch.load('recent_actions.dat')
 	reward_history=torch.load('files/reward_history.dat')
@@ -57,7 +57,7 @@ def generate_data(episode,agent,env):
 
 	env.send_data_to_pepper("step"+str(init_step))
 	env.close_connection()
-	env = Environment()
+	env = Environment(epi=episode)
 
 	reward = 0 #temp
 	terminal = 0
@@ -113,9 +113,10 @@ def main():
 	dirname_dep='dataset/Depth/ep'+str(episode)
 	dirname_model='results/ep'+str(episode)
 	episode = int(episode)
+	print('Validation files in ep'+str(episode)+' folder')
 
 	agent = RobotNQL(epi=episode)
-	env = Environment()
+	env = Environment(epi=episode)
 
 	Path(dirname_rgb).mkdir(parents=True, exist_ok=True)
 	Path(dirname_dep).mkdir(parents=True, exist_ok=True)

@@ -1,11 +1,11 @@
 import torch
 import torch.optim as optim
 import numpy as np
-import config as cfg
+import config as dcfg
 
 
 class RobotNQL:
-	def __init__(self,epi):
+	def __init__(self,epi,cfg=dcfg,validation=False):
 		#cpu or cuda
 		self.device = "cpu" #torch.device("cuda" if torch.cuda.is_available() else "cpu")
 		self.state_dim  = cfg.proc_frame_size #State dimensionality 84x84.
@@ -20,8 +20,12 @@ class RobotNQL:
 		self.learn_start= cfg.learn_start
 		self.episode=epi
 
-		file_modelGray='results/ep'+str(self.episode-1)+'/modelGray.net'
-		file_modelDepth='results/ep'+str(self.episode-1)+'/modelDepth.net'	
+		if(validation):
+			file_modelGray='validation/'+epi+'/modelGray.net'
+			file_modelDepth='validation/'+epi+'/modelDepth.net'	
+		else:
+			file_modelGray='results/ep'+str(self.episode-1)+'/modelGray.net'
+			file_modelDepth='results/ep'+str(self.episode-1)+'/modelDepth.net'	
 
 		self.modelGray=torch.load(file_modelGray).to(self.device)
 		self.modelDepth=torch.load(file_modelDepth).to(self.device)

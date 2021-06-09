@@ -21,15 +21,14 @@ def main():
 
 	agent=TrainNQL(epi=episode)
 
-	target_net=4
+	target_net=cfg.target_q
 	agent.load_data()
 	for j in range(cycles):
-		print("\nTrain= "+str(j+1)+"/"+str(cycles))
-		for i in range(trains):
-			print("epoch ",i+1)
-			agent.train()
-		agent.gray_target_net=copy.deepcopy(agent.gray_policy_net)
-		agent.depth_target_net=copy.deepcopy(agent.depth_policy_net)	
+		print("Ep."+str(episode)+" Train= "+str(j+1)+"/"+str(cycles))		
+		agent.train()
+		if(j%target_net==0):
+			agent.gray_target_net=copy.deepcopy(agent.gray_policy_net)
+			agent.depth_target_net=copy.deepcopy(agent.depth_policy_net)	
 
 
 	gray_policy_net=copy.deepcopy(agent.gray_policy_net)
