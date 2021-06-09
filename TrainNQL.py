@@ -146,9 +146,40 @@ class TrainNQL:
 		return images,depths	
 
 	def load_data(self):
+
+		rewards=torch.load('files/reward_history.dat')
+		actions=torch.load('files/action_history.dat')
+		ep_rewards=torch.load('files/ep_rewards.dat')
+
 		print("Loading images")
 
-		for i in range(self.t_eps):
+		best_scores = range(len(actions))
+		buffer_selection_mode = 'default'
+		
+
+		if(buffer_selection_mode=='success_handshake'):
+			eps_values = []
+			for i in range(len(actions)):
+
+				hspos = 0
+				hsneg = 0			
+				for step in range(len(actions[i])):		
+					if(len(actions[i])>0 ):
+						if actions[i][step] == 3 :
+							if rewards[i][step]>0 :
+								hspos = hspos+1
+							elif rewards[i][step]==-0.1 : 
+								hsneg = hsneg+1	
+				accuracy = float(((hspos)/(hspos+hsneg)))			
+				eps_values.append(accuracy)
+
+			best_scores = np.argsort(eps_values)
+
+
+			
+
+
+		for i in best_scores:
 			print('Ep: ',i+1)
 			dirname_gray='dataset/RGB/ep'+str(i+1)
 			dirname_dep='dataset/Depth/ep'+str(i+1)
@@ -172,9 +203,7 @@ class TrainNQL:
 			images,depths=self.get_data(i+1,k)	
 			print ("Loading done")
 			
-			rewards=torch.load('files/reward_history.dat')
-			actions=torch.load('files/action_history.dat')
-			ep_rewards=torch.load('files/ep_rewards.dat')
+			
 			for step  in range(k-1):
 				#print(len(rewards),i)
 				#print(len(rewards[i]), step)

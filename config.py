@@ -12,12 +12,14 @@ port = 12375
 host='127.0.0.1'
 #mdqn
 t_episodes=30
+
 #NQL
 actions	= ['1','2','3','4']
 #epsilon annealing
 ep_start   = 1.0
 ep_end	 = 0.1
-ep_endt	= 28000
+ep_endt_number = 14
+ep_endt	= ep_endt_number * t_steps
 learn_start= 0
 #training
 cycles = 10
@@ -26,9 +28,10 @@ trains = 10
 device = "cuda"#cuda
 t_eps = 30
 minibatch_size = 25
+
 discount       = 0.99 #Discount factor.
-replay_memory  = 12000
-bufferSize     =  2000
+replay_memory  = 3000
+bufferSize     =  t_steps
 target_q       = 4
 
 #rewards

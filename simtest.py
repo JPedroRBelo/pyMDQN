@@ -66,7 +66,7 @@ for i in range(episode,t_episodes):
 		reward_history=torch.load('files/reward_history.dat')
 		print(len(recent_rewards))
 		
-		env=Environment()
+		env=Environment(epi=episode)
 
 		env.send_data_to_pepper("start")
 		time.sleep(1)
@@ -77,7 +77,7 @@ for i in range(episode,t_episodes):
 
 		#setValue(file_phase,1)
 
-		env=Environment()
+		env=Environment(epi=episode)
 		env.send_data_to_pepper("stop")
 		phase = 1
 
