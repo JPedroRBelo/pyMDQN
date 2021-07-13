@@ -12,13 +12,13 @@ port = 12375
 #host='10.62.6.208'
 host='127.0.0.1'
 #mdqn
-t_episodes=30
+t_episodes=14
 #NQL
 actions	= ['1','2','3','4']
 #epsilon annealing
 ep_start   = 1.0
 ep_end	 = 0.1
-ep_endt_number = 30
+ep_endt_number = 14
 ep_endt	= ep_endt_number * t_steps
 learn_start= 0
 #training
@@ -37,11 +37,6 @@ neutral_reward = 0
 ##handshake
 hs_success_reward = 1
 hs_fail_reward = -0.1
-##eyegaze
-eg_success_reward = 0
-eg_fail_reward = 0
-##smile
-
 
 #network
 noutputs=4

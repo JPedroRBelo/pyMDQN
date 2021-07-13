@@ -154,26 +154,23 @@ class TrainNQL:
 		print("Loading images")
 
 		best_scores = range(len(actions))
-		buffer_selection_mode = 'default'
 		
+		eps_values = []
+		for i in range(len(actions)):
 
-		if(buffer_selection_mode=='success_handshake'):
-			eps_values = []
-			for i in range(len(actions)):
+			hspos = 0
+			hsneg = 0			
+			for step in range(len(actions[i])):		
+				if(len(actions[i])>0 ):
+					if actions[i][step] == 3 :
+						if rewards[i][step]==cfg.hs_success_reward:
+							hspos = hspos+1
+						elif rewards[i][step]==cfg.hs_fail_reward : 
+							hsneg = hsneg+1	
+			accuracy = float(((hspos)/(hspos+hsneg)))			
+			eps_values.append(accuracy)
 
-				hspos = 0
-				hsneg = 0			
-				for step in range(len(actions[i])):		
-					if(len(actions[i])>0 ):
-						if actions[i][step] == 3 :
-							if rewards[i][step]>0 :
-								hspos = hspos+1
-							elif rewards[i][step]==-0.1 : 
-								hsneg = hsneg+1	
-				accuracy = float(((hspos)/(hspos+hsneg)))			
-				eps_values.append(accuracy)
-
-			best_scores = np.argsort(eps_values)
+		best_scores = np.argsort(eps_values)
 
 
 			

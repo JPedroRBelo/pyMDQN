@@ -48,7 +48,7 @@ def remove(row):
 	#	total_reward += i
 	#ep_rewards.append(total_reward)
 
-
+	#
 	#torch.save(ep_rewards,folder+'/ep_rewards.dat')
 	#torch.save(rewards,folder+'/reward_history.dat')
 	#torch.save(actions,folder+'/action_history.dat')
@@ -58,7 +58,7 @@ def remove(row):
 
 if len(sys.argv) > 1:
 	row = int(sys.argv[1])
-	print('Removing row: ',row)
+	#print('Removing row: ',row)
 	remove(row)
 
 	

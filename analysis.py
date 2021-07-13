@@ -86,8 +86,6 @@ for i in range(epochs):
 	hspos = 0
 	hsneg = 0
 	wave = 0
-	wvpos = 0
-	wvneg = 0
 	wait = 0
 	look = 0
 	rwrd = 0
@@ -107,10 +105,6 @@ for i in range(epochs):
 				look = look+1
 			elif actions[i][step] == 2 :
 				wave = wave+1
-				if rewards[i][step]==cfg.eg_success_reward :
-					wvpos = wvpos+1
-				elif rewards[i][step]==cfg.eg_fail_reward : 
-					wvneg = wvneg+1
 		
 	
 	
@@ -119,15 +113,9 @@ for i in range(epochs):
 	print('Wait\t',wait)
 	print('Look\t',look)
 	print('Wave\t',wave)
-	print('Wv. Suc.\t',wvpos)
-	print('Wv. Fail\t',wvneg)
 	print('HS Suc.\t',hspos)
 	print('HS Fail\t',hsneg)
 
-	wa = 0
-	if (wvpos + wvneg != 0):
-		wa =  ((wvpos)/(wvpos+wvneg))
-	print('Wave Acuracy\t',wa)
 	ha = 0
 	if(hspos + hsneg != 0):		
 		ha = ((hspos)/(hspos+hsneg))
@@ -137,12 +125,9 @@ for i in range(epochs):
 	v_wait.append(wait)
 	v_look.append(look)
 	v_wave.append(wave)
-	v_wvneg.append(wvneg)
-	v_wvpos.append(wvpos)
 	v_hspos.append(hspos)
 	v_hsneg.append(hsneg)
 	v_hsacc.append((hspos)/(hspos+hsneg))
-	v_wvacc.append((wvpos)/(wvpos+wvneg))
 	v_rewards.append(rwrd)
 
 
@@ -172,10 +157,6 @@ else:
 	if (arg == 'hs') or (arg == 'all') or (arg == 'reward'):
 		plt.plot(v_hspos,label='HS Success')
 		plt.plot(v_hsneg,label='HS Fail')
-
-	if (arg == 'wv') or (arg == 'all')  or (arg == 'reward'):
-		plt.plot(v_wvpos,label='Wave Success')
-		plt.plot(v_wvneg,label='Wave Fail')
 		
 	if (arg == 'other') or (arg == 'all'):
 		plt.plot(np.add(v_hspos, v_hsneg),label='HS Total')
@@ -187,10 +168,6 @@ else:
 		plt.ylim([0, 1])
 		plt.ylabel('Acuracy (%)')
 		plt.plot(v_hsacc,label='Handshake')
-		plt.plot(v_wvacc,label='Wave')
-
-
-
 
 
 

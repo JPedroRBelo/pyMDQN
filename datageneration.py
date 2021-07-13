@@ -102,17 +102,10 @@ def generate_data(episode,agent,env):
 		if(aset[action_index]=='4'):
 			#reward = min(reward,cfg.hs_success_reward)
 			#reward = max(reward,cfg.hs_fail_reward)
-			if reward>=1:
+			if reward>0:
 				reward = cfg.hs_success_reward
-			elif reward<0:
+			else:
 				reward = cfg.hs_fail_reward
-		elif(aset[action_index]=='3'):
-			#reward = min(reward,cfg.hs_success_reward)
-			#reward = max(reward,cfg.hs_fail_reward)
-			if reward>=1:
-				reward = cfg.eg_success_reward
-			elif reward<0:
-				reward = cfg.eg_fail_reward
 		else:
 			reward = cfg.neutral_reward
 
@@ -120,22 +113,18 @@ def generate_data(episode,agent,env):
 		actions.append(action_index)
 		total_reward=total_reward+reward
 
-		if action_index == 3 :
+		if aset[action_index]=='4':
 			if reward>0 :
 				hspos = hspos+1
 			elif reward==cfg.hs_fail_reward : 
 				hsneg = hsneg+1
 			
-		elif action_index == 0 :
+		elif aset[action_index]=='1':
 			wait = wait+1
-		elif action_index == 1 :
+		elif aset[action_index]=='2':
 			look = look+1
-		elif action_index == 2 :
+		elif aset[action_index]=='3':
 			wave = wave+1	
-			if reward>0 :
-				wvpos = wvpos+1
-			else : 
-				wvneg = wvneg+1	
 	
 	
 		print('###################')	
@@ -143,8 +132,7 @@ def generate_data(episode,agent,env):
 		print('Wait\t'+str(wait))
 		print('Look\t'+str(look))
 		print('-------------------')
-		print('Wv Suc.\t'+str(wvpos))
-		print('Wv Fail\t'+str(wvneg))
+		print('Wave\t'+str(wave))
 		if(wvpos+wvneg):
 			print('WV Acuracy\t'+str(((wvpos)/(wvpos+wvneg))))
 		print('-------------------')

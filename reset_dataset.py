@@ -1,6 +1,6 @@
 import os
 
-os.system("rm -rf dataset/RGB/ep*")
+os.system("rm -rf dataset/Depth/ep*")
 os.system("rm -rf dataset/RGB/ep*")
 os.system("rm -rf results/*")
 os.system("python makefiles.py")
