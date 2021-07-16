@@ -31,8 +31,6 @@ def generate_data(episode,agent,env):
 	hspos = 0
 	hsneg = 0
 	wave = 0
-	wvpos = 0
-	wvneg = 0
 	wait = 0
 	look = 0
 
@@ -131,10 +129,7 @@ def generate_data(episode,agent,env):
 		print("STEP:\t"+str(step))
 		print('Wait\t'+str(wait))
 		print('Look\t'+str(look))
-		print('-------------------')
 		print('Wave\t'+str(wave))
-		if(wvpos+wvneg):
-			print('WV Acuracy\t'+str(((wvpos)/(wvpos+wvneg))))
 		print('-------------------')
 		print('HS Suc.\t'+str(hspos))
 		print('HS Fail\t'+str(hsneg))

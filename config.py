@@ -28,7 +28,7 @@ device = "cuda"#cuda
 t_eps = 14
 minibatch_size = 25
 discount       = 0.99 #Discount factor.
-replay_memory  = 28000
+replay_memory  = 12000
 bufferSize     =  t_steps
 target_q       = 4
 

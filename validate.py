@@ -92,13 +92,7 @@ def generate_data(episode,agent,env):
 				reward = cfg.hs_success_reward
 			elif reward<0:
 				reward = cfg.hs_fail_reward
-		elif(aset[action_index]=='3'):
-			#reward = min(reward,cfg.hs_success_reward)
-			#reward = max(reward,cfg.hs_fail_reward)
-			if reward>=1:
-				reward = cfg.eg_success_reward
-			elif reward<0:
-				reward = cfg.eg_fail_reward
+		
 		else:
 			reward = cfg.neutral_reward
 

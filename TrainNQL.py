@@ -163,9 +163,9 @@ class TrainNQL:
 			for step in range(len(actions[i])):		
 				if(len(actions[i])>0 ):
 					if actions[i][step] == 3 :
-						if rewards[i][step]==cfg.hs_success_reward:
+						if rewards[i][step]==self.cfg.hs_success_reward:
 							hspos = hspos+1
-						elif rewards[i][step]==cfg.hs_fail_reward : 
+						elif rewards[i][step]==self.cfg.hs_fail_reward : 
 							hsneg = hsneg+1	
 			accuracy = float(((hspos)/(hspos+hsneg)))			
 			eps_values.append(accuracy)
