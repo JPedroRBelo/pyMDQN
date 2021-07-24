@@ -3,6 +3,7 @@ import torch.optim as optim
 import numpy as np
 import os
 import re
+import copy
 import random
 from network import DQN
 from collections import namedtuple
@@ -92,9 +93,9 @@ class TrainNQL:
 
 		if not validation and self.target_q and self.episode % self.target_q == 0:
 			print ("cloning")
-			self.depth_policy_net =  DQN(noutputs=cfg.noutputs,nfeats=cfg.nfeats,nstates=cfg.nstates,kernels=cfg.kernels,strides=cfg.strides,poolsize=cfg.poolsize).to(self.device)
-			self.depth_target_net =  DQN(noutputs=cfg.noutputs,nfeats=cfg.nfeats,nstates=cfg.nstates,kernels=cfg.kernels,strides=cfg.strides,poolsize=cfg.poolsize).to(self.device)
-		
+			self.gray_target_net=copy.deepcopy(self.gray_policy_net)
+			self.depth_target_net=copy.deepcopy(self.depth_policy_net)
+
 		self.gray_target_net.load_state_dict(self.gray_target_net.state_dict())
 		self.gray_target_net.eval()
 
