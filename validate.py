@@ -318,8 +318,9 @@ if __name__ == "__main__":
 
 	import validation.configValidation as cfg
 	episode=torch.load('files/episode.dat')
-	for i in range(episode):
-		main(cfg,i)
+	main(cfg,13)
+	#for i in range(episode):
+	#	main(cfg,i)
 
 	
 
