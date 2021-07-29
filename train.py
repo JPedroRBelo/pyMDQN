@@ -12,7 +12,7 @@ import config as cfg
 #device = "cuda"#torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 cycles = cfg.cycles
-trains = cfg.trains
+#trains = cfg.trains
 
 def main():	
 	torch.cuda.empty_cache()
@@ -26,17 +26,21 @@ def main():
 	for j in range(cycles):
 		print("Ep."+str(episode)+" Train= "+str(j+1)+"/"+str(cycles))		
 		agent.train()
+		'''
 		if(j%target_net==0):
 			agent.gray_target_net=copy.deepcopy(agent.gray_policy_net)
 			agent.depth_target_net=copy.deepcopy(agent.depth_policy_net)	
+		'''
 
 
 	gray_policy_net=copy.deepcopy(agent.gray_policy_net)
 	depth_policy_net=copy.deepcopy(agent.depth_policy_net)
 
+	'''
 	if episode%target_net==1:
 		agent.gray_target_net=copy.deepcopy(agent.gray_policy_net)
 		agent.depth_target_net=copy.deepcopy(agent.depth_policy_net)
+	'''
 
 	gray_target_net = copy.deepcopy(agent.gray_target_net)
 	depth_target_net = copy.deepcopy(agent.depth_target_net)

@@ -48,12 +48,10 @@ episode=int(torch.load('files/episode.dat'))
 command = './simDRLSR.x86_64'
 execute_simulator = False
 if(len(sys.argv)>1):
-	if(sys.argv[1]=='true' or  sys.argv[1]=='True'):
-		execute_simulator = True
-		if(len(sys.argv)>2):
-			directory = str(sys.argv[2])
-			command = abspath(join(directory,command))
-			#command = directory+command
+	execute_simulator = True
+	directory = str(sys.argv[1])
+	command = abspath(join(directory,command))
+		#command = directory+command
 
 
 phase = getValue(file_phase)

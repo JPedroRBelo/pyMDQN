@@ -17,11 +17,8 @@ def generate_data(episode,env):
 	aset = ['1','2','3','4']
 
 	env.send_data_to_pepper("step"+str(0))
-<<<<<<< HEAD
-	env.send_data_to_pepper("episodeControlDriver")
-=======
 	env.send_data_to_pepper("episode"+str(episode))
->>>>>>> origin/kraken_tests
+	env.send_data_to_pepper("workdir"+str(Path(__file__).parent.absolute()))
 	env.close_connection()
 	env = Environment(epi=episode)
 

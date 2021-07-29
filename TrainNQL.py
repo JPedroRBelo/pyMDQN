@@ -3,6 +3,7 @@ import torch.optim as optim
 import numpy as np
 import os
 import re
+import copy
 import random
 from network import DQN
 from collections import namedtuple
@@ -92,9 +93,9 @@ class TrainNQL:
 
 		if not validation and self.target_q and self.episode % self.target_q == 0:
 			print ("cloning")
-			self.depth_policy_net =  DQN(noutputs=cfg.noutputs,nfeats=cfg.nfeats,nstates=cfg.nstates,kernels=cfg.kernels,strides=cfg.strides,poolsize=cfg.poolsize).to(self.device)
-			self.depth_target_net =  DQN(noutputs=cfg.noutputs,nfeats=cfg.nfeats,nstates=cfg.nstates,kernels=cfg.kernels,strides=cfg.strides,poolsize=cfg.poolsize).to(self.device)
-		
+			self.gray_target_net=copy.deepcopy(self.gray_policy_net)
+			self.depth_target_net=copy.deepcopy(self.depth_policy_net)
+
 		self.gray_target_net.load_state_dict(self.gray_target_net.state_dict())
 		self.gray_target_net.eval()
 
@@ -154,26 +155,23 @@ class TrainNQL:
 		print("Loading images")
 
 		best_scores = range(len(actions))
-		buffer_selection_mode = 'default'
 		
+		eps_values = []
+		for i in range(len(actions)):
 
-		if(buffer_selection_mode=='success_handshake'):
-			eps_values = []
-			for i in range(len(actions)):
+			hspos = 0
+			hsneg = 0			
+			for step in range(len(actions[i])):		
+				if(len(actions[i])>0 ):
+					if actions[i][step] == 3 :
+						if rewards[i][step]==self.cfg.hs_success_reward:
+							hspos = hspos+1
+						elif rewards[i][step]==self.cfg.hs_fail_reward : 
+							hsneg = hsneg+1	
+			accuracy = float(((hspos)/(hspos+hsneg)))			
+			eps_values.append(accuracy)
 
-				hspos = 0
-				hsneg = 0			
-				for step in range(len(actions[i])):		
-					if(len(actions[i])>0 ):
-						if actions[i][step] == 3 :
-							if rewards[i][step]>0 :
-								hspos = hspos+1
-							elif rewards[i][step]==-0.1 : 
-								hsneg = hsneg+1	
-				accuracy = float(((hspos)/(hspos+hsneg)))			
-				eps_values.append(accuracy)
-
-			best_scores = np.argsort(eps_values)
+		best_scores = np.argsort(eps_values)
 
 
 			
@@ -205,13 +203,16 @@ class TrainNQL:
 			
 			
 			for step  in range(k-1):
-				#print(len(rewards),i)
-				#print(len(rewards[i]), step)
+
+				reward = rewards[i][step]
+
+				'''
 				reward = self.cfg.neutral_reward
 				if rewards[i][step]>=1:
 					reward = self.cfg.hs_success_reward
 				elif rewards[i][step]<0:
-					reward = self.cfg.hs_fail_reward
+					reward = self.cfg.hs_fail_reward				'''
+
 				reward = torch.tensor([reward], device=self.device)
 				action = torch.tensor([[actions[i][step]]], device=self.device, dtype=torch.long)
 				#image = images[step].unsqueeze(0).to(self.device)
@@ -228,13 +229,13 @@ class TrainNQL:
 
 
 	def train(self):
-		if len(self.memory) < self.minibatch_size:
+		if self.bufferSize < self.minibatch_size:
 		    return
-		for i in range(0,len(self.memory),self.minibatch_size):
+		for i in range(0,self.bufferSize,self.minibatch_size):
 			#transitions = self.memory.sample(self.minibatch_size)
 			transitions = self.memory.pull(self.minibatch_size)
 
-			print('Batch train: '+str(int(i/self.minibatch_size)+1)+"/"+str(int(len(self.memory)/self.minibatch_size)+1))
+			print('Batch train: '+str(int(i/self.minibatch_size)+1)+"/"+str(int(self.bufferSize/self.minibatch_size)+1))
 			
 			aux_transitions = []
 			for t in transitions:

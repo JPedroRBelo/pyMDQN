@@ -68,6 +68,8 @@ def generate_data(episode,agent,env):
 	env.send_data_to_pepper("step"+str(init_step))
 	env.send_data_to_pepper("episode"+str(episode))
 	env.send_data_to_pepper("speed"+str(cfg.simulation_speed))
+	env.send_data_to_pepper("workdir"+str(Path(__file__).parent.absolute()))
+	env.send_data_to_pepper("fov"+str(cfg.robot_fov))
 	env.close_connection()
 	env = Environment(epi=episode)
 
@@ -98,33 +100,29 @@ def generate_data(episode,agent,env):
 		if(aset[action_index]=='4'):
 			#reward = min(reward,cfg.hs_success_reward)
 			#reward = max(reward,cfg.hs_fail_reward)
-			if reward>=1:
+			if reward>0:
 				reward = cfg.hs_success_reward
-			elif reward<0:
-				reward = cfg.hs_fail_reward
 			else:
-				reward = cfg.neutral_reward
+				reward = cfg.hs_fail_reward
 		else:
 			reward = cfg.neutral_reward
-
 
 		rewards.append(reward)
 		actions.append(action_index)
 		total_reward=total_reward+reward
 
-		if action_index == 3 :
+		if aset[action_index]=='4':
 			if reward>0 :
 				hspos = hspos+1
-			elif reward==-0.1 : 
+			elif reward==cfg.hs_fail_reward : 
 				hsneg = hsneg+1
-
 			
-		elif action_index == 0 :
+		elif aset[action_index]=='1':
 			wait = wait+1
-		elif action_index == 1 :
+		elif aset[action_index]=='2':
 			look = look+1
-		elif action_index == 2 :
-			wave = wave+1		
+		elif aset[action_index]=='3':
+			wave = wave+1	
 	
 	
 		print('###################')	
@@ -132,10 +130,12 @@ def generate_data(episode,agent,env):
 		print('Wait\t'+str(wait))
 		print('Look\t'+str(look))
 		print('Wave\t'+str(wave))
+		print('-------------------')
 		print('HS Suc.\t'+str(hspos))
 		print('HS Fail\t'+str(hsneg))
 		if(hspos+hsneg):
-			print('Acuracy\t'+str(((hspos)/(hspos+hsneg))))
+			print('HS Acuracy\t'+str(((hspos)/(hspos+hsneg))))
+		
 
 		print("Total Reward: ",total_reward)
 		print('================>')
