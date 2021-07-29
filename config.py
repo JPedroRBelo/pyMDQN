@@ -12,7 +12,7 @@ port = 12375
 #host='10.62.6.208'
 host='127.0.0.1'
 #mdqn
-t_episodes=30
+t_episodes=14
 #NQL
 actions	= ['1','2','3','4']
 #epsilon annealing

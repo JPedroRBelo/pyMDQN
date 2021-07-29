@@ -33,9 +33,10 @@ def remove(row):
 
 	#rewards.append(recent_rewards)
 	#actions.append(recent_actions)
-	rewards.pop(-1)
-	actions.pop(-1)
-	ep_rewards.pop(-1)
+	while(len(rewards)>14):
+		rewards.pop(-1)
+		actions.pop(-1)
+		ep_rewards.pop(-1)
 
 	print(len(rewards))
 	print(len(actions))

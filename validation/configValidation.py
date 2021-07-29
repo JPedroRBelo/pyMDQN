@@ -1,5 +1,5 @@
 #datageneration
-simulation_speed = 10
+simulation_speed = 1
 t_steps = 560
 robot_fov = 60
 #environment
